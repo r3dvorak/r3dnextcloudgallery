@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     pkg_r3dnextcloudgallery
- * @version     2.0.1
+ * @version     2.0.2
  * @date        2026-06-01
  * @author      Richard Dvorak, <dev@r3d.de> - https://www.r3d.de
  * @license     GNU General Public License version 2 or later
@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Adapter\PackageAdapter;
 use Joomla\CMS\Installer\InstallerScript;
+use Joomla\CMS\Language\Text;
 
 class R3dnextcloudgalleryInstallerScript extends InstallerScript
 {
@@ -33,11 +34,11 @@ class R3dnextcloudgalleryInstallerScript extends InstallerScript
             return true;
         }
 
-        $pluginsUrl = 'index.php?option=com_plugins&view=plugins&filter[search]=r3dnextcloudgallery';
-        $message = 'R3D Nextcloud Gallery wurde erfolgreich installiert. '
-            . 'Bitte aktivieren Sie beide Plugins: '
-            . '<a href="' . $pluginsUrl . '"><strong>Felder - R3D Nextcloud Gallery</strong></a> und '
-            . '<a href="' . $pluginsUrl . '"><strong>System - R3D Nextcloud Gallery YooTheme</strong></a>.';
+        $pluginsUrl = 'index.php?option=com_plugins&view=plugins&filter[search]=R3D';
+        $message = Text::sprintf(
+            'PKG_R3DNEXTCLOUDGALLERY_POSTINSTALL_ENABLE_BOTH',
+            $pluginsUrl
+        );
 
         Factory::getApplication()->enqueueMessage(
             $message,
