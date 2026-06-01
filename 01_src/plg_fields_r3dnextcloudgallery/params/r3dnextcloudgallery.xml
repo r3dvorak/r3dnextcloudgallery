@@ -11,7 +11,7 @@
       <field name="thumb_quality" type="number" default="70" min="40" max="95" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_DESC" />
       <field name="storage_subfolder" type="text" default="nc-gallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_STORAGE_SUBFOLDER_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_STORAGE_SUBFOLDER_DESC" />
       <field name="allowed_share_hosts" type="textarea" rows="4" default="" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ALLOWED_SHARE_HOSTS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ALLOWED_SHARE_HOSTS_DESC" />
-      <field name="enforce_allowed_share_hosts" type="radio" default="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_DESC">
+      <field name="enforce_allowed_share_hosts" type="radio" default="0" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_DESC">
         <option value="1">JYES</option>
         <option value="0">JNO</option>
       </field>

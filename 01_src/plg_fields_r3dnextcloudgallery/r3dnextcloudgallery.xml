@@ -7,7 +7,7 @@
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
   <authorEmail>dev@r3d.de</authorEmail>
   <authorUrl>https://www.r3d.de</authorUrl>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <description>PLG_FIELDS_R3DNEXTCLOUDGALLERY_XML_DESCRIPTION</description>
   <namespace path="src">R3d\Plugin\Fields\R3dnextcloudgallery</namespace>
 
@@ -52,7 +52,7 @@
           <option value="1">JYES</option>
           <option value="0">JNO</option>
         </field>
-        <field name="frontend_fallback_injection" type="radio" default="0" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_DESC">
+        <field name="frontend_fallback_injection" type="radio" default="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_DESC">
           <option value="1">JYES</option>
           <option value="0">JNO</option>
         </field>

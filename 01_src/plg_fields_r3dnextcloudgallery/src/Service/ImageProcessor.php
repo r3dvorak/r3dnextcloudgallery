@@ -59,6 +59,7 @@ final class ImageProcessor
         }
 
         $sourceImage = $this->createImageFromFile($sourceAbsolute, $mime);
+        [$sourceImage, $sourceWidth, $sourceHeight] = $this->applyOrientationFromExif($sourceImage, $sourceAbsolute, $mime, $sourceWidth, $sourceHeight);
 
         [$largeWidth, $largeHeight] = $this->fitWithin($sourceWidth, $sourceHeight, $largeMaxEdge);
         [$thumbWidth, $thumbHeight] = $this->fitWithin($sourceWidth, $sourceHeight, $thumbMaxEdge);
@@ -134,6 +135,67 @@ final class ImageProcessor
         $compression = 9 - (int) round((((float) $normalized) / 100.0) * 9.0);
 
         return max(0, min(9, $compression));
+    }
+
+    private function applyOrientationFromExif($image, string $path, string $mime, int $width, int $height): array
+    {
+        if ($mime !== 'image/jpeg' || !function_exists('exif_read_data')) {
+            return [$image, $width, $height];
+        }
+
+        $exif = @exif_read_data($path);
+        $orientation = (int) ($exif['Orientation'] ?? 1);
+
+        if ($orientation < 2 || $orientation > 8) {
+            return [$image, $width, $height];
+        }
+
+        $rotated = false;
+
+        switch ($orientation) {
+            case 2:
+                if (function_exists('imageflip')) {
+                    imageflip($image, IMG_FLIP_HORIZONTAL);
+                }
+                break;
+            case 3:
+                $image = imagerotate($image, 180, 0);
+                $rotated = true;
+                break;
+            case 4:
+                if (function_exists('imageflip')) {
+                    imageflip($image, IMG_FLIP_VERTICAL);
+                }
+                break;
+            case 5:
+                if (function_exists('imageflip')) {
+                    imageflip($image, IMG_FLIP_HORIZONTAL);
+                }
+                $image = imagerotate($image, -90, 0);
+                $rotated = true;
+                break;
+            case 6:
+                $image = imagerotate($image, -90, 0);
+                $rotated = true;
+                break;
+            case 7:
+                if (function_exists('imageflip')) {
+                    imageflip($image, IMG_FLIP_HORIZONTAL);
+                }
+                $image = imagerotate($image, 90, 0);
+                $rotated = true;
+                break;
+            case 8:
+                $image = imagerotate($image, 90, 0);
+                $rotated = true;
+                break;
+        }
+
+        if ($rotated && (($orientation >= 5 && $orientation <= 8) || $orientation === 6 || $orientation === 8)) {
+            [$width, $height] = [$height, $width];
+        }
+
+        return [$image, $width, $height];
     }
 }
 

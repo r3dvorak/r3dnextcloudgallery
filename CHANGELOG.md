@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4] - 2026-06-01
+
+- Default geändert: `enforce_allowed_share_hosts` ist jetzt `Nein` (`0`).
+- Frontend-Fallback-Injection standardmäßig aktiviert, damit Galerien in mehr Layouts zuverlässig sichtbar sind.
+- Bildimport: EXIF-Orientation wird berücksichtigt (Auto-Rotation für 90/180/270 Grad inkl. Spiegelungsfälle).
+- `plg_fields_r3dnextcloudgallery` auf `2.0.2` erhöht, Package auf `2.0.4`.
+
 ## [2.0.3] - 2026-06-01
 
 - Fix: Entfernt beim Install/Update die Altdatei `plugins/fields/r3dnextcloudgallery/fields/admin_widget.php`.

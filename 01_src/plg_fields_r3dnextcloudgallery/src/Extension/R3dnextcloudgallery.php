@@ -218,7 +218,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
     public function importGallery(string $shareUrl, int $articleId, int $fieldId, array $params = []): array
     {
         $allowedShareHosts = $this->parseAllowedShareHosts((string) ($params['allowed_share_hosts'] ?? ''));
-        $enforceAllowedHosts = !array_key_exists('enforce_allowed_share_hosts', $params) || (int) $params['enforce_allowed_share_hosts'] === 1;
+        $enforceAllowedHosts = array_key_exists('enforce_allowed_share_hosts', $params) && (int) $params['enforce_allowed_share_hosts'] === 1;
         if ($enforceAllowedHosts && $allowedShareHosts === []) {
             throw new \RuntimeException('No allowed share hosts configured. Please add trusted Nextcloud hosts in the plugin settings.');
         }
@@ -1470,7 +1470,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $constraints = ImportConstraints::fromParams($params);
         $shareLinkParser = new ShareLinkParser();
         $allowedShareHosts = $this->parseAllowedShareHosts((string) ($params['allowed_share_hosts'] ?? ''));
-        $enforceAllowedHosts = !array_key_exists('enforce_allowed_share_hosts', $params) || (int) $params['enforce_allowed_share_hosts'] === 1;
+        $enforceAllowedHosts = array_key_exists('enforce_allowed_share_hosts', $params) && (int) $params['enforce_allowed_share_hosts'] === 1;
         if ($enforceAllowedHosts && $allowedShareHosts === []) {
             throw new \RuntimeException('No allowed share hosts configured. Please add trusted Nextcloud hosts in the plugin settings.');
         }
