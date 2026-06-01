@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.9] - 2026-06-01
+
+- JED-Checker-Fix: Package-Manifest-`<name>` von technischem Prefix (`pkg_r3dnextcloudgallery`) auf Listing-Namen (`R3D Nextcloud Gallery`) umgestellt.
+- Package auf `2.0.9` angehoben.
+
 ## [2.0.8] - 2026-06-01
 
 - Neu: `Galerie in Content Prepare anhängen` und `Frontend-Fallback-Injektion` jetzt pro Feld konfigurierbar.
