@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.7] - 2026-06-01
+
+- Frontend-Inject-Position korrigiert: Galerie wird jetzt nach dem letzten Absatz (`</p>`) innerhalb des Artikels eingefügt.
+- Fallback bleibt: wenn kein Absatz gefunden wird, Einfügen vor `</article>`, danach vor `</main>`.
+- `plg_fields_r3dnextcloudgallery` auf `2.0.5` und Package auf `2.0.7` erhöht.
+
 ## [2.0.6] - 2026-06-01
 
 - Frontend-Inject repariert für YOOtheme-Szenarien ohne Bridge-Integration.

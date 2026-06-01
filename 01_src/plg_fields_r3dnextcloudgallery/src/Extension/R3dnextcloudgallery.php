@@ -1949,21 +1949,37 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
 
     private function injectGalleryIntoBody(string $body, string $chunk): string
     {
-        // YOOtheme/article layout: inject before article pagination/sidebar blocks.
-        if (preg_match('/<nav[^>]*class="[^"]*uk-text-center[^"]*"[^>]*>/i', $body)) {
-            return preg_replace('/<nav[^>]*class="[^"]*uk-text-center[^"]*"[^>]*>/i', $chunk . '$0', $body, 1) ?: $body;
-        }
-        if (preg_match('/<div[^>]*class="[^"]*uk-width-1-4@m[^"]*"[^>]*>/i', $body)) {
-            return preg_replace('/<div[^>]*class="[^"]*uk-width-1-4@m[^"]*"[^>]*>/i', $chunk . '$0', $body, 1) ?: $body;
+        $insertBeforeClosing = static function (string $html, string $closingTag, string $payload): string {
+            $closePos = stripos($html, $closingTag);
+            if ($closePos === false) {
+                return $html;
+            }
+
+            $scope = substr($html, 0, $closePos);
+            $lastParagraphPos = strripos($scope, '</p>');
+
+            if ($lastParagraphPos !== false) {
+                $insertPos = $lastParagraphPos + 4;
+                return substr($html, 0, $insertPos) . $payload . substr($html, $insertPos);
+            }
+
+            return substr($html, 0, $closePos) . $payload . substr($html, $closePos);
+        };
+
+        // Prefer article-local insertion (after last paragraph inside article).
+        if (str_contains(strtolower($body), '</article>')) {
+            $updated = $insertBeforeClosing($body, '</article>', $chunk);
+            if ($updated !== $body) {
+                return $updated;
+            }
         }
 
-        // Default article templates: append at end of article.
-        if (str_contains($body, '</article>')) {
-            return preg_replace('/<\/article>/i', $chunk . '</article>', $body, 1) ?: $body;
-        }
-
-        if (str_contains($body, '</main>')) {
-            return preg_replace('/<\/main>/i', $chunk . '</main>', $body, 1) ?: $body;
+        // Fallback for templates without <article>, but with <main>.
+        if (str_contains(strtolower($body), '</main>')) {
+            $updated = $insertBeforeClosing($body, '</main>', $chunk);
+            if ($updated !== $body) {
+                return $updated;
+            }
         }
 
         if (str_contains($body, '</body>')) {
