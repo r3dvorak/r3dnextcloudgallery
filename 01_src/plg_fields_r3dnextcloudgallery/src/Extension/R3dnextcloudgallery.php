@@ -33,7 +33,7 @@ use R3d\Plugin\Fields\R3dnextcloudgallery\Service\ShareLinkParser;
 
 final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\Plugin\FieldsPlugin
 {
-    private const ASSET_VERSION = '1.5.5';
+    private const ASSET_VERSION = '1.5.6';
 
     private array $preSaveFieldValues = [];
     private bool $frontendNeedsLightGallery = false;

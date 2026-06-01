@@ -596,9 +596,35 @@
       });
     });
 
+    const masterDelete = box.parentElement?.querySelector("[data-r3dncg-master-delete='1']");
+    const getDeleteChecks = () => Array.from(box.parentElement?.querySelectorAll("[data-r3dncg-delete]") || []);
+    const syncMasterDeleteState = () => {
+      if (!masterDelete) return;
+      const checks = getDeleteChecks();
+      if (!checks.length) {
+        masterDelete.checked = false;
+        masterDelete.indeterminate = false;
+        return;
+      }
+      const checkedCount = checks.filter((el) => el.checked).length;
+      masterDelete.checked = checkedCount === checks.length;
+      masterDelete.indeterminate = checkedCount > 0 && checkedCount < checks.length;
+    };
+
+    masterDelete?.addEventListener("change", () => {
+      const checks = getDeleteChecks();
+      checks.forEach((el) => { el.checked = masterDelete.checked; });
+      syncMasterDeleteState();
+    });
+
+    getDeleteChecks().forEach((el) => {
+      el.addEventListener("change", syncMasterDeleteState);
+    });
+    syncMasterDeleteState();
+
     const deleteSelected = box.parentElement?.querySelector("[data-r3dncg-delete-selected='1']");
     deleteSelected?.addEventListener("click", async () => {
-      const checks = Array.from(document.querySelectorAll("[data-r3dncg-delete]:checked"));
+      const checks = getDeleteChecks().filter((el) => el.checked);
       if (!checks.length) {
         window.alert(i18n.noneSelected);
         return;

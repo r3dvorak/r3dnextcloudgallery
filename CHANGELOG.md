@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.5] - 2026-06-01
+
+- Fix: Checkbox `Alle` im Admin-Caption-Editor funktioniert wieder.
+- Master-Checkbox setzt/entfernt jetzt alle Bild-Checkboxen im jeweiligen Feld-Widget.
+- Scope-Fix: `Delete selected` arbeitet nur noch auf dem aktiven Widget statt global über die Seite.
+- Asset-Version auf `1.5.6` erhöht (Cache-Busting für `field.js`).
+- `plg_fields_r3dnextcloudgallery` auf `2.0.3` und Package auf `2.0.5` erhöht.
+
 ## [2.0.4] - 2026-06-01
 
 - Default geändert: `enforce_allowed_share_hosts` ist jetzt `Nein` (`0`).
