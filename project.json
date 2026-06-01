@@ -1,0 +1,35 @@
+{
+  "project": {
+    "name": "pkg_r3dnextcloudgallery",
+    "slug": "r3dnextcloudgallery",
+    "vendor": "r3d",
+    "description": "Joomla 6 package for R3D Nextcloud Gallery plugins.",
+    "updateServerUrl": "https://extensions.r3d.de/joomlaextensions/updates/pkg_r3dnextcloudgallery.xml",
+    "changelogUrl": "https://github.com/r3dvorak/r3dnextcloudgallery/blob/main/CHANGELOG.md",
+    "defaults": {
+      "version": "2.0.0",
+      "creationDate": "2026-06-01"
+    },
+    "author": {
+      "name": "Richard Dvorak",
+      "email": "dev@r3d.de",
+      "url": "https://www.r3d.de"
+    },
+    "license": "GPL-2.0-or-later"
+  },
+  "updates": {
+    "baseUrl": "https://extensions.r3d.de/joomlaextensions/updates"
+  },
+  "paths": {
+    "src": "01_src",
+    "build": "02_build",
+    "docs": "03_docs",
+    "dist": "04_dist",
+    "updates": "05_updates"
+  },
+  "standards": {
+    "targetJoomla": "6.x",
+    "targetPhp": "8.2+",
+    "versioning": "semver"
+  }
+}

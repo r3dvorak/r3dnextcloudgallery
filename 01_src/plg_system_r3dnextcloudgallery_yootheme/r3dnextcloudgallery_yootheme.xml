@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+  <name>PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME</name>
+  <author>Richard Dvorak</author>
+  <creationDate>2026-05-30</creationDate>
+  <copyright>(C) 2026 Richard Dvorak</copyright>
+  <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+  <authorEmail>dev@r3d.de</authorEmail>
+  <authorUrl>https://www.r3d.de</authorUrl>
+  <version>0.1.9</version>
+  <description>PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_XML_DESCRIPTION</description>
+  <namespace path="src">R3d\Plugin\System\R3dnextcloudgalleryYootheme</namespace>
+
+  <files>
+    <filename plugin="r3dnextcloudgallery_yootheme">r3dnextcloudgallery_yootheme.php</filename>
+    <filename>script.php</filename>
+    <filename>r3dnextcloudgallery_yootheme.xml</filename>
+    <folder>language</folder>
+    <folder>services</folder>
+    <folder>src</folder>
+  </files>
+
+  <services>
+    <provider plugin="r3dnextcloudgallery_yootheme">services/provider.php</provider>
+  </services>
+
+  <scriptfile>script.php</scriptfile>
+
+  <languages>
+    <language tag="en-GB">language/en-GB/plg_system_r3dnextcloudgallery_yootheme.ini</language>
+    <language tag="en-GB">language/en-GB/plg_system_r3dnextcloudgallery_yootheme.sys.ini</language>
+    <language tag="de-DE">language/de-DE/plg_system_r3dnextcloudgallery_yootheme.ini</language>
+    <language tag="de-DE">language/de-DE/plg_system_r3dnextcloudgallery_yootheme.sys.ini</language>
+  </languages>`r`n`r`n<config>
+    <fields name="params">
+      <fieldset name="basic" label="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_FIELDSET_BASIC">
+        <field name="enabled" type="radio" default="1" label="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_ENABLED_LABEL" description="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_ENABLED_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="field_name_hint" type="text" default="" label="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_FIELD_NAME_HINT_LABEL" description="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_FIELD_NAME_HINT_DESC" />
+        <field name="prefer_type_match" type="radio" default="1" label="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_PREFER_TYPE_MATCH_LABEL" description="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_PREFER_TYPE_MATCH_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="debug_log" type="radio" default="0" label="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_DEBUG_LOG_LABEL" description="PLG_SYSTEM_R3DNEXTCLOUDGALLERY_YOOTHEME_DEBUG_LOG_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+</extension>
+

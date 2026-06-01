@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="fields" method="upgrade">
+  <name>PLG_FIELDS_R3DNEXTCLOUDGALLERY</name>
+  <author>Richard Dvorak</author>
+  <creationDate>2026-05-21</creationDate>
+  <copyright>(C) 2026 Richard Dvorak</copyright>
+  <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+  <authorEmail>dev@r3d.de</authorEmail>
+  <authorUrl>https://www.r3d.de</authorUrl>
+  <version>2.0.0</version>
+  <description>PLG_FIELDS_R3DNEXTCLOUDGALLERY_XML_DESCRIPTION</description>
+  <namespace path="src">R3d\Plugin\Fields\R3dnextcloudgallery</namespace>
+
+  <files>
+    <filename plugin="r3dnextcloudgallery">r3dnextcloudgallery.php</filename>
+    <filename>script.php</filename>
+    <filename>r3dnextcloudgallery.xml</filename>
+    <folder>language</folder>
+    <folder>fields</folder>
+    <folder>media</folder>
+    <folder>params</folder>
+    <folder>services</folder>
+    <folder>src</folder>
+    <folder>tmpl</folder>
+  </files>
+
+  <services>
+    <provider plugin="r3dnextcloudgallery">services/provider.php</provider>
+  </services>
+
+  <scriptfile>script.php</scriptfile>
+
+  <languages>
+    <language tag="en-GB">language/en-GB/plg_fields_r3dnextcloudgallery.ini</language>
+    <language tag="en-GB">language/en-GB/plg_fields_r3dnextcloudgallery.sys.ini</language>
+    <language tag="de-DE">language/de-DE/plg_fields_r3dnextcloudgallery.ini</language>
+    <language tag="de-DE">language/de-DE/plg_fields_r3dnextcloudgallery.sys.ini</language>
+  </languages>`r`n`r`n<config>
+    <fields name="params">
+      <fieldset name="r3dnextcloudgallery_config_basic" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_CONFIG_BASIC">
+        <field name="jpeg_quality" type="number" default="75" min="40" max="95" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_JPEG_QUALITY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_JPEG_QUALITY_DESC" />
+        <field name="thumb_quality" type="number" default="70" min="40" max="95" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_DESC" />
+        <field name="max_images" type="number" default="100" min="1" max="500" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_IMAGES_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_IMAGES_DESC" />
+        <field name="max_file_size_mb" type="number" default="25" min="1" max="200" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_FILESIZE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_FILESIZE_DESC" />
+        <field name="large_max_edge" type="number" default="1920" min="320" max="6000" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LARGE_EDGE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LARGE_EDGE_DESC" />
+        <field name="thumb_max_edge" type="number" default="480" min="80" max="2000" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_EDGE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_EDGE_DESC" />
+        <field name="keep_source_for_debug" type="radio" default="0" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_KEEP_SOURCE_DEBUG_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_KEEP_SOURCE_DEBUG_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="frontend_contentprepare_append" type="radio" default="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_CONTENTPREPARE_APPEND_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_CONTENTPREPARE_APPEND_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="frontend_fallback_injection" type="radio" default="0" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_FALLBACK_INJECTION_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+</extension>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

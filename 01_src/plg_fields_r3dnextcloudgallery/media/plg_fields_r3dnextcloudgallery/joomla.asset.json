@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "plg_fields_r3dnextcloudgallery",
+  "version": "1.4.4",
+  "assets": [
+    {
+      "name": "plg_fields_r3dnextcloudgallery.style",
+      "type": "style",
+      "uri": "plg_fields_r3dnextcloudgallery/css/field.css"
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/js/field.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.style",
+      "type": "style",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/css/lightgallery-bundle.min.css"
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.core.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lightgallery.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.zoom.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-zoom.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.fullscreen.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-fullscreen.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.autoplay.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-autoplay.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.thumbnail.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-thumbnail.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.share.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-share.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.rotate.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-rotate.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_fields_r3dnextcloudgallery.lightgallery.hash.script",
+      "type": "script",
+      "uri": "plg_fields_r3dnextcloudgallery/vendor/lightgallery/js/lg-hash.min.js",
+      "attributes": {
+        "defer": true
+      }
+    }
+  ]
+}
+
+
+
+
+
+

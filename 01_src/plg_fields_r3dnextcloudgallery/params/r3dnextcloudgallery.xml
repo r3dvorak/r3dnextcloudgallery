@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fields name="fieldparams">
+    <fieldset name="fieldparams">
+
+      <field name="max_images" type="number" default="50" min="1" max="100" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_IMAGES_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_IMAGES_DESC" />
+      <field name="max_file_size_mb" type="number" default="25" min="1" max="200" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_FILESIZE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_MAX_FILESIZE_DESC" />
+      <field name="large_max_edge" type="number" default="1920" min="320" max="6000" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LARGE_EDGE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LARGE_EDGE_DESC" />
+      <field name="thumb_max_edge" type="number" default="480" min="80" max="2000" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_EDGE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_EDGE_DESC" />
+      <field name="jpeg_quality" type="number" default="75" min="40" max="95" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_JPEG_QUALITY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_JPEG_QUALITY_DESC" />
+      <field name="thumb_quality" type="number" default="70" min="40" max="95" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_THUMB_QUALITY_DESC" />
+      <field name="storage_subfolder" type="text" default="nc-gallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_STORAGE_SUBFOLDER_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_STORAGE_SUBFOLDER_DESC" />
+      <field name="allowed_share_hosts" type="textarea" rows="4" default="" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ALLOWED_SHARE_HOSTS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ALLOWED_SHARE_HOSTS_DESC" />
+      <field name="enforce_allowed_share_hosts" type="radio" default="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_ENFORCE_ALLOWED_SHARE_HOSTS_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="use_filename_for_caption" type="radio" default="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_USE_FILENAME_FOR_CAPTION_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_USE_FILENAME_FOR_CAPTION_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+
+      <field name="frontend_layout" type="list" default="masonry" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LAYOUT_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LAYOUT_DESC">
+        <option value="grid">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LAYOUT_GRID</option>
+        <option value="masonry">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LAYOUT_MASONRY</option>
+      </field>
+      <field name="frontend_thumb_min_width" type="number" default="240" min="120" max="800" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_THUMB_MIN_WIDTH_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_THUMB_MIN_WIDTH_DESC" />
+      <field name="frontend_thumb_max_width" type="number" default="480" min="180" max="1200" step="10" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_THUMB_MAX_WIDTH_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_THUMB_MAX_WIDTH_DESC" />
+      <field name="frontend_gap" type="number" default="15" min="0" max="80" step="1" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_GAP_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_GAP_DESC" />
+
+      <field name="frontend_columns_mobile" type="list" default="2" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_MOBILE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_MOBILE_DESC">
+        <option value="1">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_1</option>
+        <option value="2">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_2</option>
+        <option value="3">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_3</option>
+        <option value="4">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_4</option>
+      </field>
+      <field name="frontend_columns_tablet" type="list" default="3" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_TABLET_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_TABLET_DESC">
+        <option value="1">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_1</option>
+        <option value="2">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_2</option>
+        <option value="3">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_3</option>
+        <option value="4">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_4</option>
+        <option value="5">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_5</option>
+        <option value="6">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_6</option>
+      </field>
+      <field name="frontend_columns_desktop" type="list" default="4" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_DESKTOP_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_DESKTOP_DESC">
+        <option value="1">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_1</option>
+        <option value="2">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_2</option>
+        <option value="3">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_3</option>
+        <option value="4">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_4</option>
+        <option value="5">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_5</option>
+        <option value="6">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_COLUMNS_6</option>
+      </field>
+
+      <field name="frontend_lightbox" type="list" default="builtin" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LIGHTBOX_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LIGHTBOX_DESC">
+        <option value="none">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LIGHTBOX_NONE</option>
+        <option value="builtin">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LIGHTBOX_BUILTIN</option>
+        <option value="lightgallery">PLG_FIELDS_R3DNEXTCLOUDGALLERY_FRONTEND_LIGHTBOX_LIGHTGALLERY</option>
+      </field>
+      <field name="built_in_fullscreen" type="radio" default="1" showon="frontend_lightbox:builtin" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_BUILTIN_FULLSCREEN_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_BUILTIN_FULLSCREEN_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="built_in_slideshow" type="radio" default="0" showon="frontend_lightbox:builtin" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_BUILTIN_SLIDESHOW_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_BUILTIN_SLIDESHOW_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+
+      <field name="lightgallery_zoom" type="radio" default="1" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_ZOOM_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_ZOOM_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_fullscreen" type="radio" default="1" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_FULLSCREEN_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_FULLSCREEN_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_autoplay" type="radio" default="1" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_AUTOPLAY_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_AUTOPLAY_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_thumbnails" type="radio" default="0" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_THUMBNAILS_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_THUMBNAILS_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_share" type="radio" default="0" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_SHARE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_SHARE_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_rotate" type="radio" default="0" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_ROTATE_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_ROTATE_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_hash" type="radio" default="1" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_HASH_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_HASH_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_download" type="radio" default="0" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_DOWNLOAD_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_DOWNLOAD_DESC">
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+      </field>
+      <field name="lightgallery_autoplay_interval" type="number" default="5000" min="1000" max="30000" step="500" showon="frontend_lightbox:lightgallery" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_AUTOPLAY_INTERVAL_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_LG_AUTOPLAY_INTERVAL_DESC" />
+
+      <field name="field_keep_source_for_debug" type="radio" default="0" label="PLG_FIELDS_R3DNEXTCLOUDGALLERY_KEEP_SOURCE_DEBUG_LABEL" description="PLG_FIELDS_R3DNEXTCLOUDGALLERY_KEEP_SOURCE_DEBUG_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+    </fieldset>
+  </fields>
+</form>
