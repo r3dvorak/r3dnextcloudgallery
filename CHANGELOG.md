@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.8] - 2026-06-01
+
+- Neu: `Galerie in Content Prepare anhängen` und `Frontend-Fallback-Injektion` jetzt pro Feld konfigurierbar.
+- Beide Feldoptionen unterstützen `Use Global` als Standard (übernimmt Plugin-Einstellung).
+- Render-Logik respektiert die Schalter jetzt pro Feld:
+  - ContentPrepare rendert nur Felder mit aktivem ContentPrepare-Flag.
+  - AfterRender rendert nur Felder mit aktivem Fallback-Flag.
+- `plg_fields_r3dnextcloudgallery` auf `2.0.6` und Package auf `2.0.8` erhöht.
+
 ## [2.0.7] - 2026-06-01
 
 - Frontend-Inject-Position korrigiert: Galerie wird jetzt nach dem letzten Absatz (`</p>`) innerhalb des Artikels eingefügt.

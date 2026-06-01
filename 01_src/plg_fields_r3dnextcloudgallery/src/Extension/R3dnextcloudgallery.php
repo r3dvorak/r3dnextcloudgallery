@@ -649,10 +649,6 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             return;
         }
 
-        if ((int) $this->params->get('frontend_contentprepare_append', 1) !== 1) {
-            return;
-        }
-
         $context = (string) $context;
         if ($context !== '' && !str_starts_with($context, 'com_content')) {
             return;
@@ -681,6 +677,9 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
 
                 $raw = is_string($field->rawvalue ?? null) ? (string) $field->rawvalue : (string) ($field->value ?? '');
                 $options = $this->extractRenderOptions($field);
+                if (($options['frontend_contentprepare_append'] ?? 1) !== 1) {
+                    continue;
+                }
                 $options['article_id'] = $articleId;
                 $options['field_id'] = (int) ($field->id ?? 0);
                 $html = $this->renderGallery($raw, $options);
@@ -693,19 +692,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
 
         // Fallback: if template did not provide jcfields, load field values directly.
         if ($append === []) {
-            $append = $this->loadRenderedGalleriesForArticle($articleId);
-            if ($append === []) {
-                $latest = $this->resolveLatestGalleryJsonByArticle($articleId);
-                if ($latest !== '') {
-                    $html = $this->renderGallery(json_encode(['gallery_json' => $latest], JSON_UNESCAPED_SLASHES) ?: '', [
-                        'article_id' => $articleId,
-                        'field_id' => 0,
-                    ]);
-                    if ($html !== '') {
-                        $append[] = $html;
-                    }
-                }
-            }
+            $append = $this->loadRenderedGalleriesForArticle($articleId, 'contentprepare');
         }
 
         if ($append === []) {
@@ -735,10 +722,6 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             return;
         }
 
-        if ((int) $this->params->get('frontend_fallback_injection', 0) !== 1) {
-            return;
-        }
-
         $input = $app->input;
         $articleId = $this->resolveCurrentArticleId();
         if ($articleId <= 0) {
@@ -752,7 +735,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             return;
         }
 
-        $append = $this->loadRenderedGalleriesForArticle($articleId);
+        $append = $this->loadRenderedGalleriesForArticle($articleId, 'afterrender');
         if ($append === []) {
             return;
         }
@@ -963,7 +946,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             . '</section>';
     }
 
-    private function loadRenderedGalleriesForArticle(int $articleId): array
+    private function loadRenderedGalleriesForArticle(int $articleId, string $mode = 'any'): array
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
@@ -990,6 +973,12 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             }
             $raw = is_string($row->rawvalue ?? null) ? (string) $row->rawvalue : '';
             $options = $this->extractRenderOptions($row);
+            if ($mode === 'contentprepare' && ($options['frontend_contentprepare_append'] ?? 1) !== 1) {
+                continue;
+            }
+            if ($mode === 'afterrender' && ($options['frontend_fallback_injection'] ?? 0) !== 1) {
+                continue;
+            }
             $options['article_id'] = $articleId;
             $options['field_id'] = (int) ($row->field_id ?? 0);
             if ($raw === '') {
@@ -1022,7 +1011,15 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
                     'columns' => 4,
                     'article_id' => $articleId,
                     'field_id' => (int) ($row->field_id ?? 0),
+                    'frontend_contentprepare_append' => (int) $this->params->get('frontend_contentprepare_append', 1),
+                    'frontend_fallback_injection' => (int) $this->params->get('frontend_fallback_injection', 1),
                 ];
+                if ($mode === 'contentprepare' && ($options['frontend_contentprepare_append'] ?? 1) !== 1) {
+                    continue;
+                }
+                if ($mode === 'afterrender' && ($options['frontend_fallback_injection'] ?? 0) !== 1) {
+                    continue;
+                }
                 $html = $this->renderGallery($raw, $options);
                 if ($html !== '') {
                     $result[] = $html;
@@ -1868,6 +1865,8 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             'lightgallery_hash' => 1,
             'lightgallery_download' => 0,
             'lightgallery_autoplay_interval' => 5000,
+            'frontend_contentprepare_append' => (int) $this->params->get('frontend_contentprepare_append', 1),
+            'frontend_fallback_injection' => (int) $this->params->get('frontend_fallback_injection', 1),
         ];
 
         $fieldParamsRaw = $field->fieldparams ?? null;
@@ -1942,6 +1941,14 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $legacyMobile = (int) ($fieldParams['frontend_mobile_columns'] ?? 0);
         if ($legacyMobile >= 1 && $legacyMobile <= 2) {
             $options['columns_mobile'] = $legacyMobile;
+        }
+
+        if (array_key_exists('frontend_contentprepare_append', $fieldParams) && (string) $fieldParams['frontend_contentprepare_append'] !== '') {
+            $options['frontend_contentprepare_append'] = ((int) $fieldParams['frontend_contentprepare_append'] === 1) ? 1 : 0;
+        }
+
+        if (array_key_exists('frontend_fallback_injection', $fieldParams) && (string) $fieldParams['frontend_fallback_injection'] !== '') {
+            $options['frontend_fallback_injection'] = ((int) $fieldParams['frontend_fallback_injection'] === 1) ? 1 : 0;
         }
 
         return $options;
