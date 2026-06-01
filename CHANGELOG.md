@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1] - 2026-06-01
+
+- Paket-Installationshinweis erweitert: Aktivierung beider Plugins ist jetzt explizit genannt.
+- Postflight-Meldung enthält direkten Link zur Plugin-Verwaltung mit Suchfilter `r3dnextcloudgallery`.
+- `project.json`, `VERSION` und Paket-Manifest auf `2.0.1` angehoben.
+
 ## [2.0.0] - 2026-06-01
 
 - Erstes Uptick im Package-Projekt auf `2.0.0`.

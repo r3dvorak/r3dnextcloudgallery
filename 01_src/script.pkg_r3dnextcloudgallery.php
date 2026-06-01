@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     pkg_r3dnextcloudgallery
- * @version     2.0.0
+ * @version     2.0.1
  * @date        2026-06-01
  * @author      Richard Dvorak, <dev@r3d.de> - https://www.r3d.de
  * @license     GNU General Public License version 2 or later
@@ -33,8 +33,14 @@ class R3dnextcloudgalleryInstallerScript extends InstallerScript
             return true;
         }
 
+        $pluginsUrl = 'index.php?option=com_plugins&view=plugins&filter[search]=r3dnextcloudgallery';
+        $message = 'R3D Nextcloud Gallery wurde erfolgreich installiert. '
+            . 'Bitte aktivieren Sie beide Plugins: '
+            . '<a href="' . $pluginsUrl . '"><strong>Felder - R3D Nextcloud Gallery</strong></a> und '
+            . '<a href="' . $pluginsUrl . '"><strong>System - R3D Nextcloud Gallery YooTheme</strong></a>.';
+
         Factory::getApplication()->enqueueMessage(
-            'R3D Nextcloud Gallery wurde erfolgreich installiert.',
+            $message,
             'success'
         );
 

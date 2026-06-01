@@ -2,14 +2,14 @@
 <extension type="package" method="upgrade">
     <name>pkg_r3dnextcloudgallery</name>
     <packagename>r3dnextcloudgallery</packagename>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <creationDate>2026-06-01</creationDate>
     <author>Richard Dvorak</author>
     <authorEmail>dev@r3d.de</authorEmail>
     <authorUrl>https://www.r3d.de</authorUrl>
     <copyright>Copyright (C) 2026 Richard Dvorak</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>R3D Nextcloud Gallery package for Joomla 6.</description>
+    <description>R3D Nextcloud Gallery package for Joomla 6. Please enable both plugins after install.</description>
     <blockChildUninstall>false</blockChildUninstall>
 
     <files>
