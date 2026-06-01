@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3] - 2026-06-01
+
+- Fix: Entfernt beim Install/Update die Altdatei `plugins/fields/r3dnextcloudgallery/fields/admin_widget.php`.
+- Dadurch verschwindet der unerwünschte Feldtyp `R3DNEXTCLOUDGALLERY_admin_widget` aus der Feldauswahl.
+- `plg_fields_r3dnextcloudgallery` auf `2.0.1` erhöht, Package auf `2.0.3`.
+
 ## [2.0.2] - 2026-06-01
 
 - Package auf EN/DE i18n umgestellt (`PKG_R3DNEXTCLOUDGALLERY_*` Sprachkeys).
