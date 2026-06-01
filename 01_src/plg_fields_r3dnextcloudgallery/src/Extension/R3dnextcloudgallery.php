@@ -653,11 +653,12 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             return;
         }
 
-        $input = $app->input;
-        if ($input->getCmd('option') !== 'com_content' || $input->getCmd('view') !== 'article') {
+        $context = (string) $context;
+        if ($context !== '' && !str_starts_with($context, 'com_content')) {
             return;
         }
 
+        $input = $app->input;
         $articleId = (int) ($article->id ?? 0);
         if ($articleId <= 0) {
             return;
@@ -739,11 +740,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         }
 
         $input = $app->input;
-        if ($input->getCmd('option') !== 'com_content' || $input->getCmd('view') !== 'article') {
-            return;
-        }
-
-        $articleId = $input->getInt('id', 0);
+        $articleId = $this->resolveCurrentArticleId();
         if ($articleId <= 0) {
             return;
         }
@@ -773,6 +770,31 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         }
 
         $app->setBody($body);
+    }
+
+    private function resolveCurrentArticleId(): int
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+
+        $articleId = (int) $input->getInt('id', 0);
+        if ($articleId > 0) {
+            return $articleId;
+        }
+
+        $menu = $app->getMenu();
+        $active = $menu ? $menu->getActive() : null;
+        if ($active && isset($active->query) && is_array($active->query)) {
+            $query = $active->query;
+            if (($query['option'] ?? '') === 'com_content' && ($query['view'] ?? '') === 'article') {
+                $menuArticleId = (int) ($query['id'] ?? 0);
+                if ($menuArticleId > 0) {
+                    return $menuArticleId;
+                }
+            }
+        }
+
+        return 0;
     }
 
     public function onContentBeforeSave($context, $table, $isNew, $data = []): bool

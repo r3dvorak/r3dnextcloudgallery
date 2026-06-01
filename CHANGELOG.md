@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.6] - 2026-06-01
+
+- Frontend-Inject repariert für YOOtheme-Szenarien ohne Bridge-Integration.
+- `onContentPrepare` nutzt jetzt `com_content`-Kontextprüfung statt harter `view=article`-Abbruchbedingung.
+- `onAfterRender` ermittelt Artikel-ID robuster (Request-ID oder aktive Menü-Query) und injiziert dann die Galerie.
+- `plg_fields_r3dnextcloudgallery` auf `2.0.4` und Package auf `2.0.6` erhöht.
+
 ## [2.0.5] - 2026-06-01
 
 - Fix: Checkbox `Alle` im Admin-Caption-Editor funktioniert wieder.
