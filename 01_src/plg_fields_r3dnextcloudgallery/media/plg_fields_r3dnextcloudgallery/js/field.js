@@ -17,7 +17,7 @@
     galleryTitleRequired: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_GALLERY_TITLE_REQUIRED", "Please enter a gallery title first.")
   };
 
-  const logActionFailure = ({ action, deleteKey, payload, fieldId, fieldName, articleId, status, responseText, parsed, error }) => {
+  const logActionFailure = ({ action, deleteKey, payload, fieldId, fieldName, articleId, status, responseText, parsed, serverDebug, error }) => {
     console.error("[r3dnextcloudgallery] action failed", {
       action,
       deleteKey,
@@ -28,8 +28,53 @@
       status,
       responseText,
       parsed,
+      serverDebug,
       error,
     });
+  };
+
+  const formatDebugValue = (value) => {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") return value;
+    if (typeof value === "number" || typeof value === "boolean") return String(value);
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const setInlineDebug = (root, details) => {
+    const box = root ? root.querySelector("[data-r3dncg-debug='1']") : null;
+    if (!box) return;
+
+    const lines = [];
+    const push = (label, value) => {
+      const formatted = formatDebugValue(value);
+      if (formatted !== "") lines.push(`${label}: ${formatted}`);
+    };
+
+    push("action", details.action);
+    push("deleteKey", details.deleteKey);
+    push("status", details.status);
+    push("fieldId", details.fieldId);
+    push("fieldName", details.fieldName);
+    push("articleId", details.articleId);
+    push("message", details.message);
+    push("responseText", details.responseText);
+    push("responsePayload", details.parsed);
+    push("serverDebug", details.serverDebug);
+    push("error", details.error && details.error.message ? details.error.message : details.error);
+
+    box.textContent = lines.join("\n");
+    box.classList.remove("d-none");
+  };
+
+  const clearInlineDebug = (root) => {
+    const box = root ? root.querySelector("[data-r3dncg-debug='1']") : null;
+    if (!box) return;
+    box.textContent = "";
+    box.classList.add("d-none");
   };
 
   const ensureProgressModal = () => {
@@ -200,27 +245,68 @@
       });
       responseText = await response.text();
     } catch (error) {
+      error.action = action;
+      error.deleteKey = deleteKey;
+      error.payload = debugPayload;
+      error.fieldId = fieldId;
+      error.fieldName = fieldName;
+      error.articleId = articleId;
+      error.status = response ? response.status : 0;
+      error.responseText = responseText;
+      error.parsed = null;
       logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response ? response.status : 0, responseText, parsed: null, error });
       throw error;
     }
 
     if (!response.ok) {
-      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error: new Error("HTTP " + response.status) });
-      throw new Error("HTTP " + response.status);
+      const error = new Error("HTTP " + response.status);
+      error.action = action;
+      error.deleteKey = deleteKey;
+      error.payload = debugPayload;
+      error.fieldId = fieldId;
+      error.fieldName = fieldName;
+      error.articleId = articleId;
+      error.status = response.status;
+      error.responseText = responseText;
+      error.parsed = null;
+      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
+      throw error;
     }
 
     let json;
     try {
       json = JSON.parse(responseText);
-    } catch (error) {
-      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
-      throw new Error(i18n.actionFailed);
+    } catch (parseError) {
+      const error = new Error(i18n.actionFailed);
+      error.action = action;
+      error.deleteKey = deleteKey;
+      error.payload = debugPayload;
+      error.fieldId = fieldId;
+      error.fieldName = fieldName;
+      error.articleId = articleId;
+      error.status = response.status;
+      error.responseText = responseText;
+      error.parsed = null;
+      error.parseError = parseError;
+      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, serverDebug: null, error });
+      throw error;
     }
 
     let responsePayload = json && Object.prototype.hasOwnProperty.call(json, "data") ? json.data : json;
     if (Array.isArray(responsePayload)) responsePayload = responsePayload.length ? responsePayload[0] : null;
     if (!responsePayload || responsePayload.ok !== true) {
       const message = responsePayload && responsePayload.message ? responsePayload.message : i18n.actionFailed;
+      const error = new Error(message);
+      error.action = action;
+      error.deleteKey = deleteKey;
+      error.payload = debugPayload;
+      error.fieldId = fieldId;
+      error.fieldName = fieldName;
+      error.articleId = articleId;
+      error.status = response.status;
+      error.responseText = responseText;
+      error.parsed = json;
+      error.serverDebug = responsePayload && responsePayload.debug ? responsePayload.debug : null;
       logActionFailure({
         action,
         deleteKey,
@@ -231,9 +317,10 @@
         status: response.status,
         responseText,
         parsed: json,
-        error: new Error(message),
+        serverDebug: error.serverDebug,
+        error,
       });
-      throw new Error(message);
+      throw error;
     }
 
     return responsePayload;
@@ -614,6 +701,7 @@
     const shareInput = box.querySelector("[data-r3dncg-share-url-input]");
     const galleryTitleInput = box.querySelector("[data-r3dncg-gallery-title-input]");
     const hiddenValueInput = root.querySelector("[data-r3dncg-field-value='1']");
+    clearInlineDebug(root);
 
     const syncHiddenFieldValue = () => {
       if (!hiddenValueInput || !shareInput) return;
@@ -634,7 +722,13 @@
       btn.addEventListener("click", async () => {
         const action = btn.getAttribute("data-r3dncg-action") || "";
         if (action === "save_meta") {
-          await runAction(box, "save_meta", "", null, root);
+          try {
+            await runAction(box, "save_meta", "", null, root);
+            clearInlineDebug(root);
+          } catch (error) {
+            setInlineDebug(root, error);
+            window.alert(error && error.message ? error.message : i18n.actionFailed);
+          }
           return;
         }
 
@@ -652,6 +746,7 @@
             articleId: box.getAttribute("data-article-id") || "",
             error: e,
           });
+          setInlineDebug(root, e);
           window.alert(e && e.message ? e.message : i18n.actionFailed);
         }
       });
@@ -697,8 +792,10 @@
         const key = deleteItemBtn.getAttribute("data-r3dncg-delete-item") || "";
         try {
           await runAction(box, "delete_item", key, null, root);
+          clearInlineDebug(root);
           window.location.reload();
         } catch (error) {
+          setInlineDebug(root, error);
           window.alert(error && error.message ? error.message : i18n.actionFailed);
         }
         return;
@@ -716,8 +813,10 @@
         if (!window.confirm(i18n.confirmDeleteSelected)) return;
         try {
           await runAction(box, "save_meta", "", null, root);
+          clearInlineDebug(root);
           window.location.reload();
         } catch (error) {
+          setInlineDebug(root, error);
           window.alert(error && error.message ? error.message : i18n.actionFailed);
         }
       }

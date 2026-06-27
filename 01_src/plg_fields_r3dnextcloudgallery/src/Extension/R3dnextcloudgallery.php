@@ -33,7 +33,7 @@ use R3d\Plugin\Fields\R3dnextcloudgallery\Service\ShareLinkParser;
 
 final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\Plugin\FieldsPlugin
 {
-    private const ASSET_VERSION = '1.5.7';
+    private const ASSET_VERSION = '1.5.9';
 
     private array $preSaveFieldValues = [];
     private bool $frontendNeedsLightGallery = false;
@@ -211,7 +211,25 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
                 return ['ok' => false, 'message' => 'Unsupported action.'];
             }
         } catch (\Throwable $e) {
-            return ['ok' => false, 'message' => 'Action failed.'];
+            $debug = [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'action' => $action,
+                'article_id' => $articleId,
+                'field_id' => (int) $field->id,
+                'field_name' => $fieldName,
+            ];
+
+            try {
+                error_log('[r3dnextcloudgallery] AJAX failure: ' . json_encode($debug, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            } catch (\Throwable $logError) {
+                // Ignore logging failures so the original error still reaches the client.
+            }
+
+            return ['ok' => false, 'message' => 'Action failed.', 'debug' => $debug];
         }
     }
 

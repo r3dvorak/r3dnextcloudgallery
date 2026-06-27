@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.11] - 2026-06-27
+
+- UX: Sichtbaren Backend-Debugblock bei AJAX-Fehlern im Galerie-Editor ergänzt.
+- Fix: Asset-Cachebuster auf `1.5.9` erhöht.
+- Fix: Fehlerpfad liefert jetzt strukturierte Debug-Daten für `Action failed!`.
+
 ## [2.0.10] - 2026-06-27
 
 - Fix: Lösch-Buttons im Admin-Galerie-Editor wieder auf stabilen Galerie-Root scopen.
