@@ -532,6 +532,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $decoded = is_array($decoded) ? $decoded : [];
         $fieldGalleryJson = trim((string) ($decoded['gallery_json'] ?? ''));
         $fieldValueKeys = array_keys($decoded);
+        $fieldPathDebug = $this->describeGalleryJsonPath($fieldGalleryJson);
 
         $resolvedByShare = $this->resolveGalleryJsonByShare($shareUrl, $articleId, $fieldId);
         $resolvedByArticleField = $this->resolveGalleryJsonByArticleField($articleId, $fieldId);
@@ -553,6 +554,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
                 $resolvedSource = 'none';
             }
         }
+        $effectivePathDebug = $this->describeGalleryJsonPath($effectiveGalleryJson);
 
         return [
             'action' => $action,
@@ -567,9 +569,11 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             'field_value_gallery_json' => $fieldGalleryJson,
             'field_value_gallery_json_exists' => $this->galleryJsonExists($fieldGalleryJson),
             'field_value_gallery_images' => $this->countGalleryImages($fieldGalleryJson),
+            'field_value_gallery_path_debug' => $fieldPathDebug,
             'resolved_gallery_json' => $effectiveGalleryJson,
             'resolved_gallery_json_exists' => $this->galleryJsonExists($effectiveGalleryJson),
             'resolved_gallery_images' => $this->countGalleryImages($effectiveGalleryJson),
+            'resolved_gallery_path_debug' => $effectivePathDebug,
             'resolved_source' => $resolvedSource,
             'resolved_by_share' => $resolvedByShare,
             'resolved_by_article_field' => $resolvedByArticleField,
@@ -593,6 +597,34 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         }
 
         return is_file($galleryJsonAbsolutePath);
+    }
+
+    private function describeGalleryJsonPath(string $galleryJsonRelativePath): array
+    {
+        $normalized = $this->normalizeRelativePath($galleryJsonRelativePath);
+        $candidate = $normalized !== '' ? Path::clean(rtrim(JPATH_ROOT, '/\\') . '/' . $normalized) : '';
+        $real = $candidate !== '' ? realpath($candidate) : false;
+        $realNormalized = is_string($real) && $real !== '' ? str_replace('\\', '/', $real) : '';
+        $allowedBases = $this->allowedGalleryBaseDirectories();
+        $matches = [];
+
+        if ($realNormalized !== '') {
+            foreach ($allowedBases as $allowedBase) {
+                if (str_starts_with($realNormalized . '/', $allowedBase . '/')) {
+                    $matches[] = $allowedBase;
+                }
+            }
+        }
+
+        return [
+            'relative' => $normalized,
+            'candidate_absolute' => $candidate,
+            'realpath' => $realNormalized,
+            'exists' => $candidate !== '' && is_file($candidate),
+            'allowed_bases' => $allowedBases,
+            'allowed_base_match' => $matches,
+            'is_allowed' => $matches !== [],
+        ];
     }
 
     private function resolveBackendImportMeta(string $fieldValueJson): array
@@ -2397,7 +2429,6 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         return $files;
     }
 }
-
 
 
 
