@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.11] - 2026-06-27
+
+- UX: Sichtbaren Backend-Debugblock bei AJAX-Fehlern im Galerie-Editor ergänzt.
+- Fix: Asset-Cachebuster auf `1.5.9` erhöht.
+- Fix: Fehlerpfad liefert jetzt strukturierte Debug-Daten für `Action failed!`.
+
+## [2.0.10] - 2026-06-27
+
+- Fix: Lösch-Buttons im Admin-Galerie-Editor wieder auf stabilen Galerie-Root scopen.
+- Fix: Einzel-Papierkorb und "Auswahl löschen" nutzen jetzt denselben Instanz-Context.
+- Fix: Backend-Fehlerdiagnose für AJAX-Aktionen verbessert.
+- Fix: `updateImageCaptions()` liefert bei Fehlern jetzt ein leeres Result-Array statt eines falschen Typs.
+- Fix: Legacy-Pfadformate mit führendem Slash werden für Delete/Update jetzt sauber normalisiert.
+- Fix: Delete-/AJAX-Responses werden nicht mehr durch Deprecated-Warnings aus dem YOOtheme-Systemplugin beschädigt.
+- Fix: Stale `gallery_json`-Pfadangaben fallen jetzt auf die tatsächlich befüllte Galerie zurück.
+- Asset-Cachebuster auf `1.5.7` erhöht.
+
 ## [2.0.9] - 2026-06-01
 
 - JED-Checker-Fix: Package-Manifest-`<name>` von technischem Prefix (`pkg_r3dnextcloudgallery`) auf Listing-Namen (`R3D Nextcloud Gallery`) umgestellt.

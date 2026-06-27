@@ -33,7 +33,7 @@ use R3d\Plugin\Fields\R3dnextcloudgallery\Service\ShareLinkParser;
 
 final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\Plugin\FieldsPlugin
 {
-    private const ASSET_VERSION = '1.5.6';
+    private const ASSET_VERSION = '1.5.9';
 
     private array $preSaveFieldValues = [];
     private bool $frontendNeedsLightGallery = false;
@@ -211,7 +211,25 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
                 return ['ok' => false, 'message' => 'Unsupported action.'];
             }
         } catch (\Throwable $e) {
-            return ['ok' => false, 'message' => 'Action failed.'];
+            $debug = [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'action' => $action,
+                'article_id' => $articleId,
+                'field_id' => (int) $field->id,
+                'field_name' => $fieldName,
+            ];
+
+            try {
+                error_log('[r3dnextcloudgallery] AJAX failure: ' . json_encode($debug, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            } catch (\Throwable $logError) {
+                // Ignore logging failures so the original error still reaches the client.
+            }
+
+            return ['ok' => false, 'message' => 'Action failed.', 'debug' => $debug];
         }
     }
 
@@ -390,7 +408,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         try {
             $galleryPath = $this->resolveSafeGalleryJsonPath($galleryJson);
         } catch (\Throwable $e) {
-            return '';
+            return ['updated' => 0, 'total' => 0];
         }
 
         return $mapper->applyCaptionsToGallery($galleryPath, $captionUpdates);
@@ -406,11 +424,17 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         }
 
         $galleryJson = trim((string) ($decoded['gallery_json'] ?? ''));
-        if ($galleryJson !== '') {
+        if ($galleryJson !== '' && $this->galleryJsonHasImages($galleryJson)) {
             return $fieldValueJson;
         }
 
         $resolved = $this->resolveGalleryJsonByShare($shareUrl, $articleId, $fieldId);
+        if ($resolved === '') {
+            $resolved = $this->resolveGalleryJsonByArticleField($articleId, $fieldId);
+        }
+        if ($resolved === '') {
+            $resolved = $this->resolveLatestGalleryJsonByArticle($articleId);
+        }
         if ($resolved === '') {
             return $fieldValueJson;
         }
@@ -421,6 +445,31 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $decoded['imported_at'] = $decoded['imported_at'] ?? gmdate('c');
 
         return $mapper->encode($decoded);
+    }
+
+    private function galleryJsonHasImages(string $galleryJsonRelativePath): bool
+    {
+        if ($galleryJsonRelativePath === '') {
+            return false;
+        }
+
+        try {
+            $galleryJsonAbsolutePath = $this->resolveSafeGalleryJsonPath($galleryJsonRelativePath);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (!is_file($galleryJsonAbsolutePath)) {
+            return false;
+        }
+
+        $gallery = json_decode((string) file_get_contents($galleryJsonAbsolutePath), true);
+        if (!is_array($gallery)) {
+            return false;
+        }
+
+        $images = $gallery['images'] ?? [];
+        return is_array($images) && count($images) > 0;
     }
 
     private function resolveBackendImportMeta(string $fieldValueJson): array
@@ -2010,11 +2059,11 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
      */
     private function resolveSafeGalleryJsonPath(string $relative): string
     {
-        $relative = trim(str_replace('\\', '/', $relative));
+        $relative = $this->normalizeRelativePath($relative);
         if ($relative === '') {
             throw new \RuntimeException('Empty gallery path not allowed.');
         }
-        if (str_starts_with($relative, '/') || preg_match('#^[A-Za-z]:/#', $relative)) {
+        if (preg_match('#^[A-Za-z]:/#', $relative)) {
             throw new \RuntimeException('Absolute gallery path not allowed.');
         }
         if (str_contains($relative, '../') || str_contains($relative, '..\\')) {
@@ -2035,6 +2084,11 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             }
         }
         throw new \RuntimeException('Gallery path outside allowed directories.');
+    }
+
+    private function normalizeRelativePath(string $path): string
+    {
+        return ltrim(trim(str_replace('\\', '/', $path)), '/');
     }
 
     /**

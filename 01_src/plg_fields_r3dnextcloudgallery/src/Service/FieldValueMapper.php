@@ -344,11 +344,11 @@ final class FieldValueMapper
 
     private function resolveSafeImagePath(string $relativePath): ?string
     {
-        $relativePath = str_replace('\\', '/', trim($relativePath));
+        $relativePath = $this->normalizeRelativePath($relativePath);
         if ($relativePath === '') {
             return null;
         }
-        if (str_starts_with($relativePath, '/') || preg_match('#^[A-Za-z]:/#', $relativePath)) {
+        if (preg_match('#^[A-Za-z]:/#', $relativePath)) {
             return null;
         }
         if (str_contains($relativePath, '../') || str_contains($relativePath, '/..') || str_contains($relativePath, '..\\')) {
@@ -383,6 +383,16 @@ final class FieldValueMapper
         }
 
         return $real;
+    }
+
+    private function normalizeRelativePath(string $path): string
+    {
+        $path = trim(str_replace('\\', '/', $path));
+
+        // Legacy gallery data sometimes stored web-root-relative paths with a leading slash.
+        // Normalizing here keeps delete/update operations compatible without widening access
+        // outside the Joomla site root.
+        return ltrim($path, '/');
     }
 }
 

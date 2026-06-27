@@ -49,5 +49,6 @@ $tokenKey = (string) ($data['tokenKey'] ?? '');
   <button type="button" class="btn btn-sm btn-outline-secondary" data-r3dncg-action="reimport"><?php echo Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_REIMPORT'); ?></button>
   <button type="button" class="btn btn-sm btn-outline-primary" data-r3dncg-action="save_meta"><?php echo Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_SAVE'); ?></button>
   </div>
+  <div class="alert alert-danger d-none mt-2 r3dncg-debug" data-r3dncg-debug="1" role="alert" aria-live="polite"></div>
 </div>
 
