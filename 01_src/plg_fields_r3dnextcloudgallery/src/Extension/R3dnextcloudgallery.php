@@ -406,11 +406,17 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         }
 
         $galleryJson = trim((string) ($decoded['gallery_json'] ?? ''));
-        if ($galleryJson !== '') {
+        if ($galleryJson !== '' && $this->galleryJsonHasImages($galleryJson)) {
             return $fieldValueJson;
         }
 
         $resolved = $this->resolveGalleryJsonByShare($shareUrl, $articleId, $fieldId);
+        if ($resolved === '') {
+            $resolved = $this->resolveGalleryJsonByArticleField($articleId, $fieldId);
+        }
+        if ($resolved === '') {
+            $resolved = $this->resolveLatestGalleryJsonByArticle($articleId);
+        }
         if ($resolved === '') {
             return $fieldValueJson;
         }
@@ -421,6 +427,31 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $decoded['imported_at'] = $decoded['imported_at'] ?? gmdate('c');
 
         return $mapper->encode($decoded);
+    }
+
+    private function galleryJsonHasImages(string $galleryJsonRelativePath): bool
+    {
+        if ($galleryJsonRelativePath === '') {
+            return false;
+        }
+
+        try {
+            $galleryJsonAbsolutePath = $this->resolveSafeGalleryJsonPath($galleryJsonRelativePath);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (!is_file($galleryJsonAbsolutePath)) {
+            return false;
+        }
+
+        $gallery = json_decode((string) file_get_contents($galleryJsonAbsolutePath), true);
+        if (!is_array($gallery)) {
+            return false;
+        }
+
+        $images = $gallery['images'] ?? [];
+        return is_array($images) && count($images) > 0;
     }
 
     private function resolveBackendImportMeta(string $fieldValueJson): array

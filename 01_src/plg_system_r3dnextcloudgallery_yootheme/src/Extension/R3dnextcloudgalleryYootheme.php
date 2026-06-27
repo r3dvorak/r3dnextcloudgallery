@@ -68,6 +68,7 @@ final class R3dnextcloudgalleryYootheme extends CMSPlugin
             return true;
         }
 
+        $p = (string) $p;
         if (str_starts_with($p, 'builder') || str_starts_with($p, 'theme')) {
             return true;
         }
