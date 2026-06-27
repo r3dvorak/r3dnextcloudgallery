@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.0] - 2026-06-27
+
+- UX: Zwischen Toolbar und Auswahlzeile im Admin-Galerie-Editor mehr Abstand.
+- UX: `Galerie speichern` zeigt jetzt eine sichtbare Rückmeldung während des Speicherns.
+
 ## [2.0.14] - 2026-06-27
 
 - Fix: `images/nextcloud-galerie` ist jetzt zusätzlich in `allowedGalleryBaseDirectories()` erlaubt.

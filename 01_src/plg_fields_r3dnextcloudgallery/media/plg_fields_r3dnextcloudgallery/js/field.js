@@ -11,6 +11,8 @@
     confirmDelete: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_CONFIRM_DELETE", "Delete image?"),
     confirmDeleteSelected: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_CONFIRM_DELETE_SELECTED", "Delete selected images?"),
     actionFailed: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_ACTION_FAILED", "Action failed."),
+    saveRunning: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_SAVE_RUNNING", "Saving gallery..."),
+    saveCompleted: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_SAVE_COMPLETED", "Gallery saved."),
     importRunning: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_IMPORT_RUNNING", "Import is running..."),
     reimportRunning: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_REIMPORT_RUNNING", "Reimport is running..."),
     importCompleted: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_IMPORT_COMPLETED", "Import completed."),
@@ -662,9 +664,13 @@
       btn.addEventListener("click", async () => {
         const action = btn.getAttribute("data-r3dncg-action") || "";
         if (action === "save_meta") {
+          const progress = showProgressModal(i18n.saveRunning, "...");
           try {
             await runAction(box, "save_meta", "", null, root);
+            progress.finish(i18n.saveCompleted);
+            window.setTimeout(() => progress.close(), 650);
           } catch (error) {
+            progress.close();
             window.alert(error && error.message ? error.message : i18n.actionFailed);
           }
           return;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     pkg_r3dnextcloudgallery
- * @version     2.0.14
+ * @version     2.1.0
  * @date        2026-06-27
  * @author      Richard Dvorak, <dev@r3d.de> - https://www.r3d.de
  * @license     GNU General Public License version 2 or later
