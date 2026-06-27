@@ -33,7 +33,7 @@ use R3d\Plugin\Fields\R3dnextcloudgallery\Service\ShareLinkParser;
 
 final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\Plugin\FieldsPlugin
 {
-    private const ASSET_VERSION = '1.5.11';
+    private const ASSET_VERSION = '1.5.12';
 
     private array $preSaveFieldValues = [];
     private bool $frontendNeedsLightGallery = false;
@@ -98,6 +98,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $articleId = (int) $input->post->getInt('r3dncg_article_id', 0);
         $fieldId = (int) $input->post->getInt('r3dncg_field_id', 0);
         $fieldName = trim((string) $input->post->getString('r3dncg_field_name', ''));
+        $debugEnabled = $input->post->getInt('r3dncg_debug', 0) === 1;
 
         if ($action === '' || $articleId <= 0) {
             return ['ok' => false, 'message' => 'Missing action/article id.'];
@@ -139,12 +140,32 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
                 $this->persistFieldValueForItem((int) $field->id, $articleId, $rawValue);
                 $updateResult = $this->updateImageCaptions($rawValue, $captionUpdates);
 
-                return [
+                $debug = null;
+                if ($debugEnabled) {
+                    $debug = $this->buildAjaxDebugData(
+                        $action,
+                        $rawValue,
+                        $shareUrl,
+                        $galleryTitle,
+                        $articleId,
+                        (int) $field->id,
+                        $fieldName,
+                        $captionUpdates,
+                        $updateResult,
+                        $deleteKey ?? ''
+                    );
+                }
+
+                $response = [
                     'ok' => true,
                     'message' => 'Gallery metadata updated.',
                     'updated' => (int) ($updateResult['updated'] ?? 0),
                     'total' => (int) ($updateResult['total'] ?? 0),
                 ];
+                if (is_array($debug)) {
+                    $response['debug'] = $debug;
+                }
+                return $response;
             }
 
             if (in_array($action, ['import', 'reimport'], true)) {
@@ -399,16 +420,24 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
     {
         $mapper = new FieldValueMapper();
         $decoded = $mapper->decode($fieldValueJson);
+        if (!is_array($decoded)) {
+            return ['updated' => 0, 'total' => 0, 'reason' => 'invalid_field_value'];
+        }
         $galleryJson = (string) ($decoded['gallery_json'] ?? '');
 
         if ($galleryJson === '') {
-            return ['updated' => 0, 'total' => 0];
+            return ['updated' => 0, 'total' => 0, 'reason' => 'missing_gallery_json'];
         }
 
         try {
             $galleryPath = $this->resolveSafeGalleryJsonPath($galleryJson);
         } catch (\Throwable $e) {
-            return ['updated' => 0, 'total' => 0];
+            return [
+                'updated' => 0,
+                'total' => 0,
+                'reason' => 'invalid_gallery_path',
+                'error' => $e->getMessage(),
+            ];
         }
 
         return $mapper->applyCaptionsToGallery($galleryPath, $captionUpdates);
@@ -470,6 +499,100 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
 
         $images = $gallery['images'] ?? [];
         return is_array($images) && count($images) > 0;
+    }
+
+    private function countGalleryImages(string $galleryJsonRelativePath): int
+    {
+        if ($galleryJsonRelativePath === '') {
+            return 0;
+        }
+
+        try {
+            $galleryJsonAbsolutePath = $this->resolveSafeGalleryJsonPath($galleryJsonRelativePath);
+        } catch (\Throwable $e) {
+            return 0;
+        }
+
+        if (!is_file($galleryJsonAbsolutePath)) {
+            return 0;
+        }
+
+        $gallery = json_decode((string) file_get_contents($galleryJsonAbsolutePath), true);
+        if (!is_array($gallery)) {
+            return 0;
+        }
+
+        $images = $gallery['images'] ?? [];
+        return is_array($images) ? count($images) : 0;
+    }
+
+    private function buildAjaxDebugData(string $action, string $fieldValueJson, string $shareUrl, string $galleryTitle, int $articleId, int $fieldId, string $fieldName, array $captionUpdates = [], ?array $updateResult = null, string $deleteKey = ''): array
+    {
+        $decoded = json_decode($fieldValueJson, true);
+        $decoded = is_array($decoded) ? $decoded : [];
+        $fieldGalleryJson = trim((string) ($decoded['gallery_json'] ?? ''));
+        $fieldValueKeys = array_keys($decoded);
+
+        $resolvedByShare = $this->resolveGalleryJsonByShare($shareUrl, $articleId, $fieldId);
+        $resolvedByArticleField = $this->resolveGalleryJsonByArticleField($articleId, $fieldId);
+        $resolvedByLatest = $this->resolveLatestGalleryJsonByArticle($articleId);
+
+        $resolvedSource = 'field_value';
+        $effectiveGalleryJson = $fieldGalleryJson;
+        if ($effectiveGalleryJson === '' || !$this->galleryJsonHasImages($effectiveGalleryJson)) {
+            if ($resolvedByShare !== '') {
+                $effectiveGalleryJson = $resolvedByShare;
+                $resolvedSource = 'share';
+            } elseif ($resolvedByArticleField !== '') {
+                $effectiveGalleryJson = $resolvedByArticleField;
+                $resolvedSource = 'article_field';
+            } elseif ($resolvedByLatest !== '') {
+                $effectiveGalleryJson = $resolvedByLatest;
+                $resolvedSource = 'latest_article';
+            } else {
+                $resolvedSource = 'none';
+            }
+        }
+
+        return [
+            'action' => $action,
+            'delete_key' => $deleteKey,
+            'article_id' => $articleId,
+            'field_id' => $fieldId,
+            'field_name' => $fieldName,
+            'share_url' => $shareUrl,
+            'gallery_title' => $galleryTitle,
+            'field_value_raw_length' => strlen($fieldValueJson),
+            'field_value_json_keys' => $fieldValueKeys,
+            'field_value_gallery_json' => $fieldGalleryJson,
+            'field_value_gallery_json_exists' => $this->galleryJsonExists($fieldGalleryJson),
+            'field_value_gallery_images' => $this->countGalleryImages($fieldGalleryJson),
+            'resolved_gallery_json' => $effectiveGalleryJson,
+            'resolved_gallery_json_exists' => $this->galleryJsonExists($effectiveGalleryJson),
+            'resolved_gallery_images' => $this->countGalleryImages($effectiveGalleryJson),
+            'resolved_source' => $resolvedSource,
+            'resolved_by_share' => $resolvedByShare,
+            'resolved_by_article_field' => $resolvedByArticleField,
+            'resolved_by_latest' => $resolvedByLatest,
+            'caption_updates_count' => count($captionUpdates),
+            'caption_updates_keys' => array_keys($captionUpdates),
+            'update_result' => $updateResult,
+        ];
+    }
+
+    private function galleryJsonExists(string $galleryJsonRelativePath): bool
+    {
+        if ($galleryJsonRelativePath === '') {
+            return false;
+        }
+
+        try {
+            $galleryJsonAbsolutePath = $this->resolveSafeGalleryJsonPath($galleryJsonRelativePath);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return is_file($galleryJsonAbsolutePath);
     }
 
     private function resolveBackendImportMeta(string $fieldValueJson): array
@@ -2274,10 +2397,6 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         return $files;
     }
 }
-
-
-
-
 
 
 

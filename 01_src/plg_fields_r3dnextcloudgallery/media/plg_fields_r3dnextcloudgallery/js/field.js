@@ -326,6 +326,7 @@
     body.set("r3dncg_article_id", articleId);
     body.set("r3dncg_share_url", shareUrl);
     body.set("r3dncg_gallery_title", galleryTitle);
+    if (isDebugEnabled()) body.set("r3dncg_debug", "1");
     if (tokenKey) body.set(tokenKey, "1");
 
     if (action === "update_captions" || action === "save_meta") body.set("r3dncg_captions", JSON.stringify(collectCaptions(scope)));
@@ -526,6 +527,22 @@
     });
     if (isDebugEnabled()) {
       consoleInfo("[r3dnextcloudgallery] success payload", responsePayload);
+      if ((action === "delete_item" || action === "update_captions" || action === "save_meta") && Number(responsePayload.updated || 0) === 0 && Number(responsePayload.total || 0) === 0) {
+        console.warn("[r3dnextcloudgallery] server reported no caption updates", {
+          action,
+          deleteKey,
+          fieldId,
+          fieldName,
+          articleId,
+          responsePayload,
+        });
+        if (responsePayload.debug) {
+          consoleGroup("[r3dnextcloudgallery] server debug", responsePayload.debug);
+        }
+      }
+      if (responsePayload.debug && Number(responsePayload.updated || 0) > 0) {
+        consoleGroup("[r3dnextcloudgallery] server debug", responsePayload.debug);
+      }
     }
 
     return responsePayload;

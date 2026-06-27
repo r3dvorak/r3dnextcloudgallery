@@ -109,7 +109,7 @@ class JFormFieldR3dnextcloudgallery extends FormField
     private function ensureDirectAssetLoading(): string
     {
         $base = rtrim(Uri::root(), '/') . '/plugins/fields/r3dnextcloudgallery/media/plg_fields_r3dnextcloudgallery';
-        $version = '1.5.11';
+        $version = '1.5.12';
 
         return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/field.css?v=' . $version, ENT_QUOTES, 'UTF-8') . '">'
             . '<script src="' . htmlspecialchars($base . '/js/field.js?v=' . $version, ENT_QUOTES, 'UTF-8') . '" defer></script>';
@@ -294,7 +294,6 @@ class JFormFieldR3dnextcloudgallery extends FormField
         }
     }
 }
-
 
 
 
