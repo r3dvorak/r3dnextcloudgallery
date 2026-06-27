@@ -89,12 +89,17 @@ class JFormFieldR3dnextcloudgallery extends FormField
             . '<button type="button" class="btn btn-sm btn-secondary" data-r3dncg-action="import">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_IMPORT') . '</button>'
             . '<button type="button" class="btn btn-sm btn-outline-secondary" data-r3dncg-action="reimport">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_REIMPORT') . '</button>'
             . '<button type="button" class="btn btn-sm btn-outline-primary" data-r3dncg-action="save_meta">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_SAVE') . '</button>'
+            . '<button type="button" class="btn btn-sm btn-outline-dark" data-r3dncg-debug-toggle="1" data-r3dncg-debug-state="off">Console Debug: OFF</button>'
             . '<div class="r3dncg-upload-queue" data-r3dncg-upload-queue="1">'
             . '<small class="text-muted">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_UPLOAD_QUEUE') . ': </small>'
             . '<span class="badge text-bg-light" data-r3dncg-upload-state="1">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_QUEUE_IDLE') . '</span>'
             . '</div>'
             . '</div>'
             . $statusHtml
+            . '<div class="alert alert-danger d-none mt-2 r3dncg-debug" data-r3dncg-debug="1" role="alert" aria-live="polite">'
+            . '<div class="r3dncg-debug__body" data-r3dncg-debug-body="1" style="white-space: pre-wrap; font-family: var(--bs-font-monospace, monospace); font-size: .875rem;"></div>'
+            . '<button type="button" class="btn btn-sm btn-outline-light mt-2" data-r3dncg-debug-dismiss="1">Debug schließen</button>'
+            . '</div>'
             . $editorHtml
             . '</div>';
 
@@ -104,7 +109,7 @@ class JFormFieldR3dnextcloudgallery extends FormField
     private function ensureDirectAssetLoading(): string
     {
         $base = rtrim(Uri::root(), '/') . '/plugins/fields/r3dnextcloudgallery/media/plg_fields_r3dnextcloudgallery';
-        $version = '1.5.10';
+        $version = '1.5.11';
 
         return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/field.css?v=' . $version, ENT_QUOTES, 'UTF-8') . '">'
             . '<script src="' . htmlspecialchars($base . '/js/field.js?v=' . $version, ENT_QUOTES, 'UTF-8') . '" defer></script>';
@@ -289,8 +294,6 @@ class JFormFieldR3dnextcloudgallery extends FormField
         }
     }
 }
-
-
 
 
 

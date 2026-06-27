@@ -1,11 +1,16 @@
 # Changelog
 
+## [2.0.13] - 2026-06-27
+
+- Fix: Console-Debug-Schalter wird jetzt im tatsächlich gerenderten Feld-Output angezeigt.
+- Debug: Konsolen-Event-Buffer bleibt per `sessionStorage` über Reloads erhalten.
+
 ## [2.0.12] - 2026-06-27
 
 - UX: Console-Debug-Schalter im Backend ergänzt.
 - Debug: AJAX-Delete loggt request/response/success/failure strukturiert in die Browser-Konsole.
 - Debug: Letzte Debug-Events sind in `window.__r3dnextcloudgalleryDebugEvents` abrufbar.
-- Fix: Asset-Cachebuster auf `1.5.10` erhöht.
+- Fix: Asset-Cachebuster auf `1.5.11` erhöht.
 
 ## [2.0.11] - 2026-06-27
 
