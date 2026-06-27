@@ -2254,6 +2254,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         $root = rtrim(JPATH_ROOT, '/\\');
         $candidates = [
             $root . '/images/nc-gallery',
+            $root . '/images/nextcloud-galerie',
             $root . '/images/galleries/nextcloud',
         ];
 
@@ -2429,7 +2430,6 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         return $files;
     }
 }
-
 
 
 
