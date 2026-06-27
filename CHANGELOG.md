@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.10] - 2026-06-27
+
+- Fix: Lösch-Buttons im Admin-Galerie-Editor wieder auf stabilen Galerie-Root scopen.
+- Fix: Einzel-Papierkorb und "Auswahl löschen" nutzen jetzt denselben Instanz-Context.
+- Fix: Backend-Fehlerdiagnose für AJAX-Aktionen verbessert.
+- Fix: `updateImageCaptions()` liefert bei Fehlern jetzt ein leeres Result-Array statt eines falschen Typs.
+- Asset-Cachebuster auf `1.5.7` erhöht.
+
 ## [2.0.9] - 2026-06-01
 
 - JED-Checker-Fix: Package-Manifest-`<name>` von technischem Prefix (`pkg_r3dnextcloudgallery`) auf Listing-Namen (`R3D Nextcloud Gallery`) umgestellt.

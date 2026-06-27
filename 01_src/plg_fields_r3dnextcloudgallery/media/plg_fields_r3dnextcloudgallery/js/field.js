@@ -1,6 +1,9 @@
 (() => {
   const ajaxUrl = `${window.location.origin}${window.location.pathname.replace(/\/$/, "")}?option=com_ajax&plugin=r3dnextcloudgallery&group=fields&format=json`;
   const actionBoxes = document.querySelectorAll("[data-r3dncg-actions='1']");
+  const boundRoots = new WeakSet();
+  const getRoot = (box) => box.closest("[data-r3dncg-root='1']") || box.parentElement || box;
+  const toElement = (target) => (target instanceof Element ? target : null);
   const t = (key, fallback) => (window.Joomla && Joomla.Text && Joomla.Text._ ? Joomla.Text._(key, fallback) : fallback);
   const i18n = {
     shareRequired: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_SHARE_REQUIRED", "Please enter a Nextcloud share link first."),
@@ -12,6 +15,21 @@
     reimportRunning: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_REIMPORT_RUNNING", "Reimport is running..."),
     importCompleted: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_IMPORT_COMPLETED", "Import completed."),
     galleryTitleRequired: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_GALLERY_TITLE_REQUIRED", "Please enter a gallery title first.")
+  };
+
+  const logActionFailure = ({ action, deleteKey, payload, fieldId, fieldName, articleId, status, responseText, parsed, error }) => {
+    console.error("[r3dnextcloudgallery] action failed", {
+      action,
+      deleteKey,
+      payload,
+      fieldId,
+      fieldName,
+      articleId,
+      status,
+      responseText,
+      parsed,
+      error,
+    });
   };
 
   const ensureProgressModal = () => {
@@ -72,21 +90,21 @@
     };
   };
 
-  const collectCaptions = () => {
+  const collectCaptions = (root) => {
     const payload = {};
-    document.querySelectorAll("[data-r3dncg-caption]").forEach((el) => {
+    root.querySelectorAll("[data-r3dncg-caption]").forEach((el) => {
       const key = el.getAttribute("data-r3dncg-caption");
       if (!key) return;
       if (!payload[key]) payload[key] = {};
       payload[key].caption = el.value || "";
     });
-    document.querySelectorAll("[data-r3dncg-sort]").forEach((el) => {
+    root.querySelectorAll("[data-r3dncg-sort]").forEach((el) => {
       const key = el.getAttribute("data-r3dncg-sort");
       if (!key) return;
       if (!payload[key]) payload[key] = {};
       payload[key].sort = parseInt(el.value || "0", 10) || 0;
     });
-    document.querySelectorAll("[data-r3dncg-delete]").forEach((el) => {
+    root.querySelectorAll("[data-r3dncg-delete]").forEach((el) => {
       const key = el.getAttribute("data-r3dncg-delete");
       if (!key) return;
       if (!payload[key]) payload[key] = {};
@@ -137,7 +155,8 @@
     });
   };
 
-  const runAction = async (box, action, deleteKey = "", extra = null) => {
+  const runAction = async (box, action, deleteKey = "", extra = null, root = null) => {
+    const scope = root || getRoot(box);
     const fieldId = box.getAttribute("data-field-id") || "";
     const fieldName = box.getAttribute("data-field-name") || "";
     const articleId = box.getAttribute("data-article-id") || "";
@@ -160,26 +179,64 @@
     body.set("r3dncg_gallery_title", galleryTitle);
     if (tokenKey) body.set(tokenKey, "1");
 
-    if (action === "update_captions" || action === "save_meta") body.set("r3dncg_captions", JSON.stringify(collectCaptions()));
+    if (action === "update_captions" || action === "save_meta") body.set("r3dncg_captions", JSON.stringify(collectCaptions(scope)));
     if (action === "delete_item" && deleteKey) body.set("r3dncg_delete_key", deleteKey);
     if (extra && typeof extra === "object") Object.keys(extra).forEach((key) => body.set(key, String(extra[key])));
 
-    const response = await fetch(ajaxUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      body: body.toString(),
-      credentials: "same-origin",
-    });
-    if (!response.ok) throw new Error("HTTP " + response.status);
-
-    const json = JSON.parse(await response.text());
-    let payload = json && Object.prototype.hasOwnProperty.call(json, "data") ? json.data : json;
-    if (Array.isArray(payload)) payload = payload.length ? payload[0] : null;
-    if (!payload || payload.ok !== true) {
-      throw new Error(payload && payload.message ? payload.message : i18n.actionFailed);
+    const payload = Object.fromEntries(body.entries());
+    const debugPayload = { ...payload };
+    if (tokenKey && Object.prototype.hasOwnProperty.call(debugPayload, tokenKey)) {
+      debugPayload[tokenKey] = "[redacted]";
     }
 
-    return payload;
+    let response;
+    let responseText = "";
+    try {
+      response = await fetch(ajaxUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+        body: body.toString(),
+        credentials: "same-origin",
+      });
+      responseText = await response.text();
+    } catch (error) {
+      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response ? response.status : 0, responseText, parsed: null, error });
+      throw error;
+    }
+
+    if (!response.ok) {
+      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error: new Error("HTTP " + response.status) });
+      throw new Error("HTTP " + response.status);
+    }
+
+    let json;
+    try {
+      json = JSON.parse(responseText);
+    } catch (error) {
+      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
+      throw new Error(i18n.actionFailed);
+    }
+
+    let responsePayload = json && Object.prototype.hasOwnProperty.call(json, "data") ? json.data : json;
+    if (Array.isArray(responsePayload)) responsePayload = responsePayload.length ? responsePayload[0] : null;
+    if (!responsePayload || responsePayload.ok !== true) {
+      const message = responsePayload && responsePayload.message ? responsePayload.message : i18n.actionFailed;
+      logActionFailure({
+        action,
+        deleteKey,
+        payload: debugPayload,
+        fieldId,
+        fieldName,
+        articleId,
+        status: response.status,
+        responseText,
+        parsed: json,
+        error: new Error(message),
+      });
+      throw new Error(message);
+    }
+
+    return responsePayload;
   };
 
   const runStepwiseImport = async (box, mode, progress) => {
@@ -548,9 +605,15 @@
   };
 
   actionBoxes.forEach((box) => {
+    const root = getRoot(box);
+    if (boundRoots.has(root)) {
+      return;
+    }
+    boundRoots.add(root);
+
     const shareInput = box.querySelector("[data-r3dncg-share-url-input]");
     const galleryTitleInput = box.querySelector("[data-r3dncg-gallery-title-input]");
-    const hiddenValueInput = box.parentElement?.querySelector("[data-r3dncg-field-value='1']");
+    const hiddenValueInput = root.querySelector("[data-r3dncg-field-value='1']");
 
     const syncHiddenFieldValue = () => {
       if (!hiddenValueInput || !shareInput) return;
@@ -571,7 +634,7 @@
       btn.addEventListener("click", async () => {
         const action = btn.getAttribute("data-r3dncg-action") || "";
         if (action === "save_meta") {
-          await runAction(box, "save_meta");
+          await runAction(box, "save_meta", "", null, root);
           return;
         }
 
@@ -582,22 +645,20 @@
           window.setTimeout(() => progress.close(), 500);
         } catch (e) {
           progress.close();
+          console.error("[r3dnextcloudgallery] import workflow failed", {
+            action,
+            fieldId: box.getAttribute("data-field-id") || "",
+            fieldName: box.getAttribute("data-field-name") || "",
+            articleId: box.getAttribute("data-article-id") || "",
+            error: e,
+          });
           window.alert(e && e.message ? e.message : i18n.actionFailed);
         }
       });
     });
 
-    box.querySelectorAll("[data-r3dncg-delete-item]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!window.confirm(i18n.confirmDelete)) return;
-        const key = btn.getAttribute("data-r3dncg-delete-item") || "";
-        await runAction(box, "delete_item", key);
-        window.location.reload();
-      });
-    });
-
-    const masterDelete = box.parentElement?.querySelector("[data-r3dncg-master-delete='1']");
-    const getDeleteChecks = () => Array.from(box.parentElement?.querySelectorAll("[data-r3dncg-delete]") || []);
+    const masterDelete = root.querySelector("[data-r3dncg-master-delete='1']");
+    const getDeleteChecks = () => Array.from(root.querySelectorAll("[data-r3dncg-delete]") || []);
     const syncMasterDeleteState = () => {
       if (!masterDelete) return;
       const checks = getDeleteChecks();
@@ -622,16 +683,44 @@
     });
     syncMasterDeleteState();
 
-    const deleteSelected = box.parentElement?.querySelector("[data-r3dncg-delete-selected='1']");
-    deleteSelected?.addEventListener("click", async () => {
-      const checks = getDeleteChecks().filter((el) => el.checked);
-      if (!checks.length) {
-        window.alert(i18n.noneSelected);
+    root.addEventListener("click", async (ev) => {
+      const target = toElement(ev.target);
+      if (!target) {
         return;
       }
-      if (!window.confirm(i18n.confirmDeleteSelected)) return;
-      await runAction(box, "save_meta");
-      window.location.reload();
+
+      const deleteItemBtn = target.closest("[data-r3dncg-delete-item]");
+      if (deleteItemBtn && root.contains(deleteItemBtn)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (!window.confirm(i18n.confirmDelete)) return;
+        const key = deleteItemBtn.getAttribute("data-r3dncg-delete-item") || "";
+        try {
+          await runAction(box, "delete_item", key, null, root);
+          window.location.reload();
+        } catch (error) {
+          window.alert(error && error.message ? error.message : i18n.actionFailed);
+        }
+        return;
+      }
+
+      const deleteSelectedBtn = target.closest("[data-r3dncg-delete-selected='1']");
+      if (deleteSelectedBtn && root.contains(deleteSelectedBtn)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const checks = getDeleteChecks().filter((el) => el.checked);
+        if (!checks.length) {
+          window.alert(i18n.noneSelected);
+          return;
+        }
+        if (!window.confirm(i18n.confirmDeleteSelected)) return;
+        try {
+          await runAction(box, "save_meta", "", null, root);
+          window.location.reload();
+        } catch (error) {
+          window.alert(error && error.message ? error.message : i18n.actionFailed);
+        }
+      }
     });
   });
 

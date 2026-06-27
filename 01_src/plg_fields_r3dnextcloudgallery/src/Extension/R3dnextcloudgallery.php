@@ -33,7 +33,7 @@ use R3d\Plugin\Fields\R3dnextcloudgallery\Service\ShareLinkParser;
 
 final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\Plugin\FieldsPlugin
 {
-    private const ASSET_VERSION = '1.5.6';
+    private const ASSET_VERSION = '1.5.7';
 
     private array $preSaveFieldValues = [];
     private bool $frontendNeedsLightGallery = false;
@@ -390,7 +390,7 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
         try {
             $galleryPath = $this->resolveSafeGalleryJsonPath($galleryJson);
         } catch (\Throwable $e) {
-            return '';
+            return ['updated' => 0, 'total' => 0];
         }
 
         return $mapper->applyCaptionsToGallery($galleryPath, $captionUpdates);

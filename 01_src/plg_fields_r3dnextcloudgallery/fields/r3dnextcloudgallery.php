@@ -67,8 +67,9 @@ class JFormFieldR3dnextcloudgallery extends FormField
         }
 
         $html =
-            '<input type="hidden" name="' . htmlspecialchars($this->name, ENT_QUOTES, 'UTF-8') . '" data-r3dncg-field-value="1" value="' . htmlspecialchars($rawValue, ENT_QUOTES, 'UTF-8') . '">' .
-            '<div class="r3d-nextcloud-gallery-actions"'
+            '<div class="r3d-nextcloud-gallery-field" data-r3dncg-root="1">'
+            . '<input type="hidden" name="' . htmlspecialchars($this->name, ENT_QUOTES, 'UTF-8') . '" data-r3dncg-field-value="1" value="' . htmlspecialchars($rawValue, ENT_QUOTES, 'UTF-8') . '">'
+            . '<div class="r3d-nextcloud-gallery-actions"'
             . ' data-r3dncg-actions="1"'
             . ' data-field-id="' . (int) $resolvedFieldId . '"'
             . ' data-field-name="' . htmlspecialchars($fieldAlias, ENT_QUOTES, 'UTF-8') . '"'
@@ -93,9 +94,9 @@ class JFormFieldR3dnextcloudgallery extends FormField
             . '<span class="badge text-bg-light" data-r3dncg-upload-state="1">' . Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_QUEUE_IDLE') . '</span>'
             . '</div>'
             . '</div>'
-            . '</div>'
             . $statusHtml
-            . $editorHtml;
+            . $editorHtml
+            . '</div>';
 
         return $directAssets . $html;
     }
@@ -103,7 +104,7 @@ class JFormFieldR3dnextcloudgallery extends FormField
     private function ensureDirectAssetLoading(): string
     {
         $base = rtrim(Uri::root(), '/') . '/plugins/fields/r3dnextcloudgallery/media/plg_fields_r3dnextcloudgallery';
-        $version = '1.5.6';
+        $version = '1.5.7';
 
         return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/field.css?v=' . $version, ENT_QUOTES, 'UTF-8') . '">'
             . '<script src="' . htmlspecialchars($base . '/js/field.js?v=' . $version, ENT_QUOTES, 'UTF-8') . '" defer></script>';
