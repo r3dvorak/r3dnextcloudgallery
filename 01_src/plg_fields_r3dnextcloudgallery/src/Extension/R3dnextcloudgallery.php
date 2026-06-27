@@ -2010,11 +2010,11 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
      */
     private function resolveSafeGalleryJsonPath(string $relative): string
     {
-        $relative = trim(str_replace('\\', '/', $relative));
+        $relative = $this->normalizeRelativePath($relative);
         if ($relative === '') {
             throw new \RuntimeException('Empty gallery path not allowed.');
         }
-        if (str_starts_with($relative, '/') || preg_match('#^[A-Za-z]:/#', $relative)) {
+        if (preg_match('#^[A-Za-z]:/#', $relative)) {
             throw new \RuntimeException('Absolute gallery path not allowed.');
         }
         if (str_contains($relative, '../') || str_contains($relative, '..\\')) {
@@ -2035,6 +2035,11 @@ final class R3dnextcloudgallery extends \Joomla\Component\Fields\Administrator\P
             }
         }
         throw new \RuntimeException('Gallery path outside allowed directories.');
+    }
+
+    private function normalizeRelativePath(string $path): string
+    {
+        return ltrim(trim(str_replace('\\', '/', $path)), '/');
     }
 
     /**

@@ -6,6 +6,7 @@
 - Fix: Einzel-Papierkorb und "Auswahl löschen" nutzen jetzt denselben Instanz-Context.
 - Fix: Backend-Fehlerdiagnose für AJAX-Aktionen verbessert.
 - Fix: `updateImageCaptions()` liefert bei Fehlern jetzt ein leeres Result-Array statt eines falschen Typs.
+- Fix: Legacy-Pfadformate mit führendem Slash werden für Delete/Update jetzt sauber normalisiert.
 - Asset-Cachebuster auf `1.5.7` erhöht.
 
 ## [2.0.9] - 2026-06-01
