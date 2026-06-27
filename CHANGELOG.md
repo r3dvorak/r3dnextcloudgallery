@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.14] - 2026-06-27
+
+- Fix: `images/nextcloud-galerie` ist jetzt zusätzlich in `allowedGalleryBaseDirectories()` erlaubt.
+
 ## [2.0.13] - 2026-06-27
 
 - Fix: Console-Debug-Schalter wird jetzt im tatsächlich gerenderten Feld-Output angezeigt.

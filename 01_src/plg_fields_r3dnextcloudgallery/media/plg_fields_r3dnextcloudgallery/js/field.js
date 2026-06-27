@@ -4,76 +4,6 @@
   const boundRoots = new WeakSet();
   const getRoot = (box) => box.closest("[data-r3dncg-root='1']") || box.parentElement || box;
   const toElement = (target) => (target instanceof Element ? target : null);
-  const debugStorageKey = "r3dnextcloudgallery.debug";
-  const debugEventsStorageKey = "r3dnextcloudgallery.debugEvents";
-  const debugEventsKey = "__r3dnextcloudgalleryDebugEvents";
-  const getUrlDebugFlag = () => {
-    try {
-      return new URLSearchParams(window.location.search).get("r3dncg_debug") === "1";
-    } catch (e) {
-      return false;
-    }
-  };
-  const isDebugEnabled = () => {
-    try {
-      return getUrlDebugFlag() || window.localStorage.getItem(debugStorageKey) === "1";
-    } catch (e) {
-      return getUrlDebugFlag();
-    }
-  };
-  const setDebugEnabled = (enabled) => {
-    try {
-      window.localStorage.setItem(debugStorageKey, enabled ? "1" : "0");
-    } catch (e) {
-      // Ignore storage failures.
-    }
-  };
-  const getDebugEvents = () => {
-    if (!Array.isArray(window[debugEventsKey])) {
-      try {
-        const stored = window.sessionStorage.getItem(debugEventsStorageKey);
-        window[debugEventsKey] = stored ? JSON.parse(stored) : [];
-      } catch (e) {
-        window[debugEventsKey] = [];
-      }
-    }
-    return window[debugEventsKey];
-  };
-  const pushDebugEvent = (event) => {
-    const events = getDebugEvents();
-    events.push({
-      ts: new Date().toISOString(),
-      ...event,
-    });
-    if (events.length > 50) {
-      events.splice(0, events.length - 50);
-    }
-    try {
-      window.sessionStorage.setItem(debugEventsStorageKey, JSON.stringify(events));
-    } catch (e) {
-      // Ignore storage failures.
-    }
-    return events;
-  };
-  const consoleInfo = (...args) => {
-    if (isDebugEnabled()) {
-      console.log(...args);
-    }
-  };
-  const consoleGroup = (label, data) => {
-    if (!isDebugEnabled()) {
-      return;
-    }
-    console.groupCollapsed(label);
-    if (data !== undefined) {
-      console.log(data);
-    }
-    console.groupEnd();
-  };
-  window.r3dncgDebugGetLast = (count = 10) => getDebugEvents().slice(-Math.max(1, Number(count) || 10));
-  if (getUrlDebugFlag()) {
-    setDebugEnabled(true);
-  }
   const t = (key, fallback) => (window.Joomla && Joomla.Text && Joomla.Text._ ? Joomla.Text._(key, fallback) : fallback);
   const i18n = {
     shareRequired: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_SHARE_REQUIRED", "Please enter a Nextcloud share link first."),
@@ -87,21 +17,7 @@
     galleryTitleRequired: t("PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_ERR_GALLERY_TITLE_REQUIRED", "Please enter a gallery title first.")
   };
 
-  const logActionFailure = ({ action, deleteKey, payload, fieldId, fieldName, articleId, status, responseText, parsed, serverDebug, error }) => {
-    pushDebugEvent({
-      kind: "failure",
-      action,
-      deleteKey,
-      payload,
-      fieldId,
-      fieldName,
-      articleId,
-      status,
-      responseText,
-      parsed,
-      serverDebug,
-      error: error && error.message ? error.message : String(error),
-    });
+  const logActionFailure = ({ action, deleteKey, payload, fieldId, fieldName, articleId, status, responseText, parsed, error }) => {
     console.error("[r3dnextcloudgallery] action failed", {
       action,
       deleteKey,
@@ -112,73 +28,8 @@
       status,
       responseText,
       parsed,
-      serverDebug,
       error,
     });
-  };
-
-  const formatDebugValue = (value) => {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "string") return value;
-    if (typeof value === "number" || typeof value === "boolean") return String(value);
-    try {
-      return JSON.stringify(value, null, 2);
-    } catch (e) {
-      return String(value);
-    }
-  };
-
-  const setInlineDebug = (root, details) => {
-    const box = root ? root.querySelector("[data-r3dncg-debug='1']") : null;
-    const body = root ? root.querySelector("[data-r3dncg-debug-body='1']") : null;
-    if (!box) return;
-
-    const lines = [];
-    const push = (label, value) => {
-      const formatted = formatDebugValue(value);
-      if (formatted !== "") lines.push(`${label}: ${formatted}`);
-    };
-
-    push("action", details.action);
-    push("deleteKey", details.deleteKey);
-    push("status", details.status);
-    push("fieldId", details.fieldId);
-    push("fieldName", details.fieldName);
-    push("articleId", details.articleId);
-    push("message", details.message);
-    push("responseText", details.responseText);
-    push("responsePayload", details.parsed);
-    push("serverDebug", details.serverDebug);
-    push("error", details.error && details.error.message ? details.error.message : details.error);
-
-    const text = lines.join("\n");
-    if (body) {
-      body.textContent = text;
-    } else {
-      box.textContent = text;
-    }
-    box.classList.remove("d-none");
-  };
-
-  const clearInlineDebug = (root) => {
-    const box = root ? root.querySelector("[data-r3dncg-debug='1']") : null;
-    const body = root ? root.querySelector("[data-r3dncg-debug-body='1']") : null;
-    if (!box) return;
-    if (body) {
-      body.textContent = "";
-    } else {
-      box.textContent = "";
-    }
-    box.classList.add("d-none");
-  };
-
-  const syncConsoleDebugToggle = (root) => {
-    const toggle = root ? root.querySelector("[data-r3dncg-debug-toggle='1']") : null;
-    if (!toggle) return;
-    const enabled = isDebugEnabled();
-    toggle.textContent = enabled ? "Console Debug: ON" : "Console Debug: OFF";
-    toggle.setAttribute("data-r3dncg-debug-state", enabled ? "on" : "off");
-    toggle.classList.toggle("active", enabled);
   };
 
   const ensureProgressModal = () => {
@@ -326,7 +177,6 @@
     body.set("r3dncg_article_id", articleId);
     body.set("r3dncg_share_url", shareUrl);
     body.set("r3dncg_gallery_title", galleryTitle);
-    if (isDebugEnabled()) body.set("r3dncg_debug", "1");
     if (tokenKey) body.set(tokenKey, "1");
 
     if (action === "update_captions" || action === "save_meta") body.set("r3dncg_captions", JSON.stringify(collectCaptions(scope)));
@@ -334,32 +184,9 @@
     if (extra && typeof extra === "object") Object.keys(extra).forEach((key) => body.set(key, String(extra[key])));
 
     const payload = Object.fromEntries(body.entries());
-    const debugPayload = { ...payload };
-    if (tokenKey && Object.prototype.hasOwnProperty.call(debugPayload, tokenKey)) {
-      debugPayload[tokenKey] = "[redacted]";
-    }
-
-    const debugContext = {
-      action,
-      deleteKey,
-      fieldId,
-      fieldName,
-      articleId,
-      payload: debugPayload,
-    };
-
-    pushDebugEvent({
-      kind: "request",
-      action,
-      deleteKey,
-      fieldId,
-      fieldName,
-      articleId,
-      payload: debugPayload,
-    });
-    consoleGroup(`[r3dnextcloudgallery] request ${action}`, debugContext);
-    if (isDebugEnabled()) {
-      consoleInfo("[r3dnextcloudgallery] request body", debugPayload);
+    const loggedPayload = { ...payload };
+    if (tokenKey && Object.prototype.hasOwnProperty.call(loggedPayload, tokenKey)) {
+      loggedPayload[tokenKey] = "[redacted]";
     }
 
     let response;
@@ -375,67 +202,29 @@
     } catch (error) {
       error.action = action;
       error.deleteKey = deleteKey;
-      error.payload = debugPayload;
+      error.payload = loggedPayload;
       error.fieldId = fieldId;
       error.fieldName = fieldName;
       error.articleId = articleId;
       error.status = response ? response.status : 0;
       error.responseText = responseText;
       error.parsed = null;
-      pushDebugEvent({
-        kind: "network-error",
-        action,
-        deleteKey,
-        fieldId,
-        fieldName,
-        articleId,
-        payload: debugPayload,
-        status: response ? response.status : 0,
-        responseText,
-        error: error && error.message ? error.message : String(error),
-      });
-      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response ? response.status : 0, responseText, parsed: null, error });
+      logActionFailure({ action, deleteKey, payload: loggedPayload, fieldId, fieldName, articleId, status: response ? response.status : 0, responseText, parsed: null, error });
       throw error;
-    }
-
-    pushDebugEvent({
-      kind: "response",
-      action,
-      deleteKey,
-      fieldId,
-      fieldName,
-      articleId,
-      status: response.status,
-      responseText,
-    });
-    if (isDebugEnabled()) {
-      consoleInfo("[r3dnextcloudgallery] response status", response.status, response.statusText);
-      consoleInfo("[r3dnextcloudgallery] raw response", responseText);
     }
 
     if (!response.ok) {
       const error = new Error("HTTP " + response.status);
       error.action = action;
       error.deleteKey = deleteKey;
-      error.payload = debugPayload;
+      error.payload = loggedPayload;
       error.fieldId = fieldId;
       error.fieldName = fieldName;
       error.articleId = articleId;
       error.status = response.status;
       error.responseText = responseText;
       error.parsed = null;
-      pushDebugEvent({
-        kind: "http-error",
-        action,
-        deleteKey,
-        fieldId,
-        fieldName,
-        articleId,
-        status: response.status,
-        responseText,
-        error: error.message,
-      });
-      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
+      logActionFailure({ action, deleteKey, payload: loggedPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
       throw error;
     }
 
@@ -446,7 +235,7 @@
       const error = new Error(i18n.actionFailed);
       error.action = action;
       error.deleteKey = deleteKey;
-      error.payload = debugPayload;
+      error.payload = loggedPayload;
       error.fieldId = fieldId;
       error.fieldName = fieldName;
       error.articleId = articleId;
@@ -454,18 +243,7 @@
       error.responseText = responseText;
       error.parsed = null;
       error.parseError = parseError;
-      pushDebugEvent({
-        kind: "parse-error",
-        action,
-        deleteKey,
-        fieldId,
-        fieldName,
-        articleId,
-        status: response.status,
-        responseText,
-        error: parseError && parseError.message ? parseError.message : String(parseError),
-      });
-      logActionFailure({ action, deleteKey, payload: debugPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, serverDebug: null, error });
+      logActionFailure({ action, deleteKey, payload: loggedPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: null, error });
       throw error;
     }
 
@@ -476,73 +254,15 @@
       const error = new Error(message);
       error.action = action;
       error.deleteKey = deleteKey;
-      error.payload = debugPayload;
+      error.payload = loggedPayload;
       error.fieldId = fieldId;
       error.fieldName = fieldName;
       error.articleId = articleId;
       error.status = response.status;
       error.responseText = responseText;
       error.parsed = json;
-      error.serverDebug = responsePayload && responsePayload.debug ? responsePayload.debug : null;
-      pushDebugEvent({
-        kind: "payload-error",
-        action,
-        deleteKey,
-        fieldId,
-        fieldName,
-        articleId,
-        status: response.status,
-        responseText,
-        parsed: json,
-        serverDebug: error.serverDebug,
-        error: message,
-      });
-      logActionFailure({
-        action,
-        deleteKey,
-        payload: debugPayload,
-        fieldId,
-        fieldName,
-        articleId,
-        status: response.status,
-        responseText,
-        parsed: json,
-        serverDebug: error.serverDebug,
-        error,
-      });
+      logActionFailure({ action, deleteKey, payload: loggedPayload, fieldId, fieldName, articleId, status: response.status, responseText, parsed: json, error });
       throw error;
-    }
-
-    pushDebugEvent({
-      kind: "success",
-      action,
-      deleteKey,
-      fieldId,
-      fieldName,
-      articleId,
-      status: response.status,
-      responseText,
-      parsed: json,
-      serverDebug: responsePayload && responsePayload.debug ? responsePayload.debug : null,
-    });
-    if (isDebugEnabled()) {
-      consoleInfo("[r3dnextcloudgallery] success payload", responsePayload);
-      if ((action === "delete_item" || action === "update_captions" || action === "save_meta") && Number(responsePayload.updated || 0) === 0 && Number(responsePayload.total || 0) === 0) {
-        console.warn("[r3dnextcloudgallery] server reported no caption updates", {
-          action,
-          deleteKey,
-          fieldId,
-          fieldName,
-          articleId,
-          responsePayload,
-        });
-        if (responsePayload.debug) {
-          consoleGroup("[r3dnextcloudgallery] server debug", responsePayload.debug);
-        }
-      }
-      if (responsePayload.debug && Number(responsePayload.updated || 0) > 0) {
-        consoleGroup("[r3dnextcloudgallery] server debug", responsePayload.debug);
-      }
     }
 
     return responsePayload;
@@ -920,14 +640,6 @@
     }
     boundRoots.add(root);
 
-    syncConsoleDebugToggle(root);
-    consoleInfo("[r3dnextcloudgallery] init", {
-      fieldId: box.getAttribute("data-field-id") || "",
-      fieldName: box.getAttribute("data-field-name") || "",
-      articleId: box.getAttribute("data-article-id") || "",
-      debugEnabled: isDebugEnabled(),
-    });
-
     const shareInput = box.querySelector("[data-r3dncg-share-url-input]");
     const galleryTitleInput = box.querySelector("[data-r3dncg-gallery-title-input]");
     const hiddenValueInput = root.querySelector("[data-r3dncg-field-value='1']");
@@ -953,7 +665,6 @@
           try {
             await runAction(box, "save_meta", "", null, root);
           } catch (error) {
-            setInlineDebug(root, error);
             window.alert(error && error.message ? error.message : i18n.actionFailed);
           }
           return;
@@ -973,7 +684,6 @@
             articleId: box.getAttribute("data-article-id") || "",
             error: e,
           });
-          setInlineDebug(root, e);
           window.alert(e && e.message ? e.message : i18n.actionFailed);
         }
       });
@@ -1021,7 +731,6 @@
           await runAction(box, "delete_item", key, null, root);
           window.location.reload();
         } catch (error) {
-          setInlineDebug(root, error);
           window.alert(error && error.message ? error.message : i18n.actionFailed);
         }
         return;
@@ -1041,30 +750,9 @@
           await runAction(box, "save_meta", "", null, root);
           window.location.reload();
         } catch (error) {
-          setInlineDebug(root, error);
           window.alert(error && error.message ? error.message : i18n.actionFailed);
         }
       }
-    });
-
-    root.addEventListener("click", (ev) => {
-      const target = toElement(ev.target);
-      if (!target) return;
-      const debugToggle = target.closest("[data-r3dncg-debug-toggle='1']");
-      if (debugToggle && root.contains(debugToggle)) {
-        const enabled = !isDebugEnabled();
-        setDebugEnabled(enabled);
-        syncConsoleDebugToggle(root);
-        consoleGroup(`[r3dnextcloudgallery] debug ${enabled ? "enabled" : "disabled"}`, {
-          fieldId: box.getAttribute("data-field-id") || "",
-          fieldName: box.getAttribute("data-field-name") || "",
-          articleId: box.getAttribute("data-article-id") || "",
-        });
-        return;
-      }
-      const dismissBtn = target.closest("[data-r3dncg-debug-dismiss='1']");
-      if (!dismissBtn || !root.contains(dismissBtn)) return;
-      clearInlineDebug(root);
     });
   });
 

@@ -48,10 +48,5 @@ $tokenKey = (string) ($data['tokenKey'] ?? '');
   <button type="button" class="btn btn-sm btn-secondary" data-r3dncg-action="import"><?php echo Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_IMPORT'); ?></button>
   <button type="button" class="btn btn-sm btn-outline-secondary" data-r3dncg-action="reimport"><?php echo Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_REIMPORT'); ?></button>
   <button type="button" class="btn btn-sm btn-outline-primary" data-r3dncg-action="save_meta"><?php echo Text::_('PLG_FIELDS_R3DNEXTCLOUDGALLERY_UI_SAVE'); ?></button>
-  <button type="button" class="btn btn-sm btn-outline-dark" data-r3dncg-debug-toggle="1" data-r3dncg-debug-state="off">Console Debug: OFF</button>
-  </div>
-  <div class="alert alert-danger d-none mt-2 r3dncg-debug" data-r3dncg-debug="1" role="alert" aria-live="polite">
-    <div class="r3dncg-debug__body" data-r3dncg-debug-body="1" style="white-space: pre-wrap; font-family: var(--bs-font-monospace, monospace); font-size: .875rem;"></div>
-    <button type="button" class="btn btn-sm btn-outline-light mt-2" data-r3dncg-debug-dismiss="1">Debug schließen</button>
   </div>
 </div>
