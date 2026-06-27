@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.12] - 2026-06-27
+
+- UX: Console-Debug-Schalter im Backend ergänzt.
+- Debug: AJAX-Delete loggt request/response/success/failure strukturiert in die Browser-Konsole.
+- Debug: Letzte Debug-Events sind in `window.__r3dnextcloudgalleryDebugEvents` abrufbar.
+- Fix: Asset-Cachebuster auf `1.5.10` erhöht.
+
 ## [2.0.11] - 2026-06-27
 
 - UX: Sichtbaren Backend-Debugblock bei AJAX-Fehlern im Galerie-Editor ergänzt.
